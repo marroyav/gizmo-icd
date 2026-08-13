@@ -1,0 +1,911 @@
+\documentclass{cernatlasnote}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\hypersetup{
+  hidelinks,
+  hypertexnames=false,
+  pdftitle={Public Review Draft: DUNE Slow Controls -- Ground Impedance Monitor (GIZMo)},
+  pdfauthor={Manuel Arroyave},
+  pdfsubject={Redacted public review copy of dual-platform GIZMo interface requirements},
+  pdfkeywords={DUNE, GIZMo, Slow Controls, OPC UA, Ignition}
+}
+
+\setlist[itemize]{leftmargin=1.35em,itemsep=0.2em,topsep=0.3em}
+\setlist[enumerate]{leftmargin=1.55em,itemsep=0.25em,topsep=0.3em}
+\setlength{\parskip}{0.38em}
+\setlength{\parindent}{0pt}
+\renewcommand{\arraystretch}{1.13}
+\setlength{\tabcolsep}{4pt}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\code}[1]{\nolinkurl{#1}}
+\newcommand{\req}[1]{\textbf{GIZMO-SC-#1}}
+\newcommand{\openitem}[1]{\textbf{OPEN-#1}}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  keepspaces=true,
+  showstringspaces=false
+}
+
+\title{PUBLIC REVIEW DRAFT:\\ DUNE Interface Document:\\ Slow Controls -- Ground Impedance Monitor (GIZMo)}
+\author{Manuel Arroyave}
+\date{13 August 2026}
+\EDMSDocNo{DUNE GIZMo--SC Interface Document}
+\EDMSDocId{Not a controlled EDMS copy}
+\draftversion{0.7-public}
+\documentlabel{13 August 2026}
+\DocAuthors{Manuel Arroyave}
+\DocCheckedBy{TBD: GIZMo owner; SC; DPS}
+\DocApprovedBy{TBD}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\fbox{\begin{minipage}{0.91\textwidth}
+\textbf{Public review copy.} This file is not an approved or controlled EDMS
+revision. Site endpoints, executable fingerprints, access details, and source
+workbooks are omitted. Use the controlled delivery package for commissioning
+and acceptance.
+\end{minipage}}
+\end{center}
+
+\begin{abstract}
+This public review copy describes the interface between DUNE Slow Controls (SC) and the
+Ground Impedance Monitor (GIZMo).  SC supports two hardware implementations:
+GIZMo Kria, built around an AMD/Xilinx Kria K26 SOM on the KR260 Robotics
+Starter Kit carrier, and legacy GIZMo, built around the ZedBoard.  Both use the
+common supervisory OPC~UA contract while retaining different internal
+hardware, firmware, operating-system, and control capabilities.  The document
+separates the physical measurement layer, hardware-control layer, internal
+application protocols, public OPC~UA interface, Ignition display and history,
+Detector Protection boundary, calibration authority, and commissioning gates.
+\end{abstract}
+
+\vfill
+\makereviewtable
+\clearpage
+
+\section*{Distribution List}
+
+GIZMo system owner; DUNE Slow Controls; Detector Protection System; detector
+operations; installation and integration; controls cybersecurity; Ignition
+support.
+
+\section*{History of Changes}
+
+\begingroup
+\small
+\begin{longtable}{L{0.12\textwidth} L{0.16\textwidth} L{0.16\textwidth} L{0.46\textwidth}}
+\toprule
+\textbf{Revision} & \textbf{Date} & \textbf{Author} & \textbf{History of changes} \\
+\midrule
+0.1 & 2026-08-12 & M. Arroyave & Initial dual-platform draft and companion DCS
+intake spreadsheets. \\
+\addlinespace
+0.2 & 2026-08-12 & M. Arroyave & Reorganized as a layered interface-control
+document following the SC--PDS precedent.  Distinguished native controller
+capability from presently exposed SC control and added the legacy controlled-
+expansion gates. \\
+\addlinespace
+0.3 & 2026-08-12 & M. Arroyave & Defined GIZMo Kria and legacy GIZMo as two
+supported hardware implementations, identified the K26 SOM/KR260 and ZedBoard
+platforms, and removed platform-precedence requirements. \\
+\addlinespace
+0.4 & 2026-08-12 & M. Arroyave & Audited all workbook numeric fields against
+the maintained Kria runtime, recovered legacy behavior, engineering records,
+and commissioning observations.  Defined the then-proposed initial threshold,
+alarm timing, and removed inherited template example values. \\
+\addlinespace
+0.5 & 2026-08-12 & M. Arroyave & Set the initial threshold to 100~ohm for
+both implementations.  Used the retained Kria SQLite history and read-only
+live samples from the connected ZedBoard to populate clearly labelled
+commissioning values and operating envelopes; confirmed that no OPC~UA server
+currently runs on the ZedBoard. \\
+\addlinespace
+0.6 & 2026-08-13 & M. Arroyave & Implemented and deployed the initial
+monitoring-only off-board ZedBoard adapter.  Added pinned target identity,
+hash-locked coherent RUN acquisition, explicit non-good unsupported values,
+and independent rejection of all OPC~UA writes and methods. \\
+\addlinespace
+0.7 & 2026-08-13 & M. Arroyave & Delivery review synchronized document and
+workbook revision metadata, reconciled the selected signal attributes with the
+canonical model, completed identity and health summary rows, and incorporated
+the partial 27-cycle legacy-adapter pilot without closing its acceptance gate. \\
+\addlinespace
+0.7-public & 2026-08-13 & M. Arroyave & Created a clearly labelled public
+review copy with site endpoints, executable fingerprints, access details, and
+controlled source workbooks omitted. \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+
+The GIZMo monitors the impedance relationship between detector ground and
+building ground.  It applies an AC stimulus, observes the returned signal
+through the installed current-transformer and analog path, calculates
+impedance-related quantities, and provides a local alarm indication.  SC uses
+the public machine interface for authorized configuration and operations,
+operator display, alarms, and history.
+
+The reviewed GIZMo Kria runtime (package version 0.4.5,
+OPC~UA model 1.3.0) provides the native Kria endpoint.  The legacy GIZMo runs
+the preserved 2017 ARM controller on its ZedBoard. SC shall support both
+implementations. The adapter validates the controller against a controlled
+SHA-256 fingerprint before publishing data. The fingerprint is omitted from
+this public copy and retained in the commissioning record:
+
+\begin{lstlisting}
+<controlled-executable-sha256>
+\end{lstlisting}
+
+This ICD specifies interfaces and ownership; it does not replace electrical
+schematics, the device software design, a Detector Protection design, or a
+traceable metrology procedure.  In particular, existence of legacy calibrator
+hardware and a \code{CAL} command does not establish a production self-
+calibration process.
+
+\subsection{Applicable and reference documents}
+
+\begin{longtable}{L{0.31\textwidth} L{0.59\textwidth}}
+\toprule
+\textbf{Document} & \textbf{Use in this ICD} \\
+\midrule
+DUNE-doc 1805 v.12, \emph{Ground Impedance Monitor} documentation set &
+Legacy GIZMo engineering and setup documentation, including \emph{Ground
+Impedance Monitor Engineering Note 170621}, \emph{Impedance Monitor System
+Setup Instructions 170621}, \emph{ZMon System Diagram 170616}, ZMon Amplifier
+Board drawing 176962, and the ZedBoard Rev~D schematic. \\
+\addlinespace
+DUNE-doc 27482 v.2, \emph{Ground Impedance Monitor} test, calibration, and
+chassis documentation set & Legacy PMod ZMon Calibrator drawing 176971,
+revised amplifier and chassis drawings, test procedures, SD-card procedure,
+and recorded characterization data. \\
+\addlinespace
+DUNE-doc 35392 v.2, \emph{ORC Documents for DUNE Impedance Monitor Rack in
+FNAL HEERC G271} & Kria GIZMo rack, power, equipment, safety, and ORC context. \\
+\addlinespace
+\emph{GIZMo-Kria}, T. DeLine, 26 June 2025; and \emph{GIZMo-Kria System
+Development/User Manual}, T. DeLine, 22 July 2026 & Kria hardware, firmware,
+software, connections, startup, operator access, and calibration guidance. \\
+\addlinespace
+Maintained GIZMo runtime 0.4.5 documentation, including
+\code{docs/opcua.md} and \code{docs/architecture.md} & Implemented GIZMo Kria
+public OPC~UA model, service boundaries, and control behavior. \\
+\addlinespace
+DUNE-doc 37315 v.1, \emph{Communication Architecture for DUNE FD Slow
+Controls} & Current SC bridge-application, OPC~UA, Ignition, protocol-hook, and
+hardware-emulator direction. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Definitions and requirement language}
+
+\begin{longtable}{L{0.25\textwidth} L{0.65\textwidth}}
+\toprule
+\textbf{Term} & \textbf{Definition} \\
+\midrule
+GIZMo Kria & GIZMo implementation using an AMD/Xilinx Kria K26 SOM on the
+KR260 Robotics Starter Kit carrier. \\
+Legacy GIZMo & GIZMo implementation using the ZedBoard and the preserved 2017
+controller software. \\
+Native capability & A function present in the platform software or service
+manager, whether or not it is exposed to SC. \\
+Exposed control & A validated, authorized operation available through the
+public OPC~UA contract. \\
+Reset & An ambiguous word that shall be qualified as \emph{clear alarm latch},
+\emph{restart measurement engine}, \emph{reboot controller}, or \emph{restore
+calibrator high-impedance state}.  These actions are not interchangeable. \\
+Authoritative alarm & Alarm decision produced by the device branch that
+controls its physical alarm outputs; not a state recreated by SC. \\
+HIGH Z & Resistance outside the validated measurement range.  It is a state,
+not a fabricated numeric endpoint. \\
+CharacterizationOnly & Hardware or historical sweep data exist, but no
+production calibration has completed validation and controlled activation. \\
+\bottomrule
+\end{longtable}
+
+``Shall'' denotes a normative requirement.  ``Should'' denotes a recommended
+implementation.  Open values are marked TBD and shall not be interpreted as
+zero, disabled, or accepted by omission.
+
+\section{System Architecture}
+
+\subsection{Layered architecture}
+
+\begin{lstlisting}
+Layer 0  Detector ground <-> building ground / CT / saturable inductor
+                           |
+Layer 1  GIZMo analog front end, ADC/DAC, FPGA, relays, local display
+                           |
+Layer 2  Platform controller and private application protocols
+         Kria: ZMon :5055, ZMQ :5555, private control socket
+         Zed:  GIZMO.elf, FPGA MMIO, VM801P SPI, SysV service
+                           |
+Layer 3  Public interface: OPC UA Binary over UA TCP
+                           |
+Layer 4  Ignition: tags, controls, alarms, trends, and history
+\end{lstlisting}
+
+Only Layer~3 is the normal SC command/data boundary.  Interfaces in Layer~2
+are private implementation details and shall not become independent SC control
+paths.  Layer~0 and Layer~1 work is a controlled electrical or calibration
+activity.
+
+\subsection{Implementation topology}
+
+\begin{longtable}{L{0.18\textwidth} L{0.40\textwidth} L{0.32\textwidth}}
+\toprule
+\textbf{Hardware} & \textbf{Acquisition and control path} &
+\textbf{SC consumers} \\
+\midrule
+GIZMo Kria & K26 SOM/KR260 measurement engine $\rightarrow$ native canonical
+OPC~UA endpoint & Ignition tags, controls, alarms, trends, and history \\
+\addlinespace
+Legacy GIZMo & ZedBoard \code{GIZMO.elf} $\rightarrow$ off-board acquisition
+and allow-listed command adapter $\rightarrow$ canonical OPC~UA endpoint &
+Ignition tags, controls, alarms, trends, and history; mutating controls are
+enabled only after the gates in Section~\ref{sec:legacy-control} \\
+\bottomrule
+\end{longtable}
+
+\req{005} SC shall support both GIZMo Kria and legacy GIZMo through the common
+OPC~UA and Ignition interface described in this ICD.  Platform-specific
+capability differences shall be represented explicitly; this ICD defines no
+precedence relationship between the implementations.
+
+\section{Physical and Electrical Interface}
+
+\subsection{Measurement boundary}
+
+The installed measurement path consists of detector ground, building-ground
+reference, the stimulus path, saturable-inductor assembly, current transformer
+(CT), analog front end, and the associated cable shields and chassis bonding.
+The system drawing places the GIZMo, CT, saturable inductor, alarm beacon, and
+audio indication across the detector/building-ground monitoring boundary.
+
+\subsection{External connectors}
+
+\begin{longtable}{L{0.21\textwidth} L{0.24\textwidth} L{0.45\textwidth}}
+\toprule
+\textbf{Connection} & \textbf{Function} & \textbf{Interface rule} \\
+\midrule
+Stimulus Out / To Detector & AC stimulus-current driver output & Route only by
+the approved chassis drawing.  Its center and shield are not generic isolated
+meter terminals. \\
+CT In / From CT & Returned current-transformer signal into the amplifier/ADC &
+Connect to the CT output with the specified coaxial cable and polarity. \\
+Monitor BNCs & Stimulus-current and CT-output observation & Oscilloscope
+diagnostics only; loading and grounding shall be controlled. \\
+Detector / building ground & Quantity being monitored & High-current and
+protective bonding remain governed by the electrical design, not this OPC~UA
+interface. \\
+12-V input & Chassis/control power & Supply, fuse, connector, and power budget
+shall follow the hardware record. \\
+Ethernet & SC network interface & Copper CAT5e/CAT6 or approved optical path to
+the restricted controls network. \\
+USB, UART, JTAG & Local commissioning and recovery & Maintenance-only; not a
+production SC command path. \\
+Beacon/audio & Local physical alarm outputs & Owned by GIZMo/DPS design; SC
+shall monitor rather than independently drive them unless separately approved. \\
+\bottomrule
+\end{longtable}
+
+The legacy rear centers labelled \code{TO DETECTOR} and \code{FROM CT} are
+active stimulus/output and signal/input conductors.  A powered resistance-mode
+measurement across them injects meter current into the active loop and is not
+a passive detector-ground measurement.  The observed 50-kohm external-box
+response is useful characterization evidence but is not a calibration point.
+
+\subsection{Kria hardware layer}
+
+GIZMo Kria uses an AMD/Xilinx Kria K26 SOM mounted on the KR260 Robotics
+Starter Kit carrier, the custom control board, FPGA overlay, ADC/DAC signal
+path, relay drivers, 5-inch EVE display, alarm/audio connections, and two
+Processing-System Ethernet interfaces.  The available records establish the
+K26/KR260 platform but do not establish the SOM commercial/industrial grade.
+The maintained software maps the installed FPGA resources at fixed addresses;
+the overlay identity and expected devices are monitored through the public
+model.
+
+\req{013} The Kria overlay, control-board revision, calibration tables, and
+physical cable assignment shall form one controlled device configuration.
+
+\subsection{Legacy hardware layer}
+
+The legacy platform consists of a ZedBoard, 2017 FPGA bitstream, amplifier
+board 176962, PMod calibrator 176971, and VM801P/FT801 local display.  The
+calibrator has five populated binary-weighted sections measured during
+characterization as 8.15, 16.17, 31.60, 63.52, and 127.12~ohm.  The R6
+footprint is unpopulated and participates in the high-impedance disconnect
+topology.  These DMM readings are as-built engineering observations, not
+traceable standards.
+
+The relay controller accepts a one-shot set/reset pulse for each latching
+relay.  Finite states select combinations of R1--R5; the restored normal state
+opens the chain through the unpopulated R6 position.  Any diagnostic that owns
+relay MMIO shall first stop \code{GIZMO.elf}, guarantee cleanup on normal exit,
+error, and interruption, verify restoration, and then restart the original
+controller.
+
+\section{Link, Transport, and Internal Protocols}
+
+\subsection{Controls network}
+
+The SC-facing physical network is Ethernet.  Each OPC~UA server shall use a
+site-assigned address on the restricted controls network.  Final hostname,
+address, route, switch port, VLAN, and firewall entries are installation data.
+
+\subsection{Kria private interfaces}
+
+\begin{longtable}{L{0.20\textwidth} L{0.18\textwidth} L{0.52\textwidth}}
+\toprule
+\textbf{Interface} & \textbf{Default} & \textbf{Purpose and policy} \\
+\midrule
+ZMon stream & TCP 5055 & Private measurement-engine result stream used by
+the display and command bridge. \\
+ZeroMQ command API & TCP 5555 & Compatibility command API for threshold,
+averaging, calibration, ADC capture, time, and latch actions.  It is not the
+preferred public SC interface. \\
+Temperature stream & TCP 5005 & Private temperature producer. \\
+SDR stream & TCP 5556 & Private raw acquisition stream; the OPC~UA snapshot is
+for modest-rate inspection, not continuous waveform distribution. \\
+Privileged helper & Unix socket & Root-owned, allow-listed operations including
+measurement-engine restart and setting the system/RTC time. \\
+OPC~UA & TCP 4840 & Supported public monitoring and control interface. \\
+Dashboard & HTTP 8080 & Read-only operator/engineering view. \\
+\bottomrule
+\end{longtable}
+
+The package target \code{gizmo.target} is the local service-lifecycle boundary.
+Systemd starts, stops, supervises, and restarts the owned components.  Service
+state is monitored through OPC~UA; arbitrary \code{systemctl} execution is not
+an OPC~UA capability.
+
+\subsection{Legacy private interfaces}
+
+The 2017 controller is launched by its SysV service in normal measurement
+mode. Its command parser has native commands including
+\code{RUN}, \code{CAL}, \code{set_th}, \code{read_adc}, \code{set_time},
+\code{set_res}, and \code{set_rly}.  The SysV wrapper supports start, stop,
+restart, and status.  These facts establish native capability; they do not by
+themselves authorize remote SC control.
+
+The Zed-to-VM801P display link is a private 16-bit SPI exchange at 4~MHz,
+mode~0, MSB-first.  The controller sends a tagged threshold, tagged resistance,
+and an untagged comparison value; the display returns alarm bits used by the
+legacy controller.  This SPI link is not an SC interface.
+
+The commissioning adapter reads a coherent completed \code{RUN} frame from
+the exact executable through a restricted SSH path.  It shall check one PID,
+the executable hash, coherent finite I/Q/magnitude/resistance, and the recovered
+transfer function before publishing a new sequence.  Repeated polls of the same
+frame shall not manufacture new measurements.
+
+\section{Public OPC UA Application Interface}
+
+\subsection{Endpoint and information model}
+
+The public protocol is OPC~UA Binary over UA TCP, normally at:
+
+\begin{lstlisting}
+opc.tcp://<assigned-gizmo-host>:4840
+\end{lstlisting}
+
+The namespace URI is \code{urn:fnal:gizmo}.  Clients shall resolve that URI at
+connection time and shall not hard-code a namespace index.  Canonical objects
+are rooted at \code{Objects/GIZMo}; deterministic string NodeIds include:
+
+\begin{lstlisting}
+GIZMo.Identity.*
+GIZMo.Measurement.*
+GIZMo.Alarm.*
+GIZMo.Configuration.*
+GIZMo.Operations.*
+GIZMo.Calibration.*
+GIZMo.Health.*
+\end{lstlisting}
+
+Model 1.x revisions preserve NodeId, datatype, rank, and physical meaning.
+A breaking change requires a new major-version namespace.  The recovered
+\code{SimpleOPCUAServer/CommandObject} tree may remain for migration, but new
+SC integration shall use the canonical model.
+
+\subsection{DataValue and quality semantics}
+
+Every variable shall provide its OPC~UA datatype, StatusCode, and source
+timestamp.  Unknown numeric values shall not be exposed as plausible zero.
+Before a first sample, the status is \code{BadWaitingForInitialData}; a retained
+sample after loss may be \code{UncertainLastUsableValue}; an unavailable
+platform feature is \code{BadNotSupported} or \code{BadDataUnavailable}.
+
+\req{020} \code{ResistanceOhm} is a physical value only when
+\code{ResistanceRange=InRange}.  HIGH~Z shall be an explicit range state with
+a null/NaN resistance and non-good quality, never a fabricated 500- or
+999-ohm measurement.
+
+\req{021} \code{Alarm.Active}, when available, shall come from the device's
+authoritative alarm branch.  SC, the adapter, and Ignition shall not recompute
+it from the resistance and threshold readbacks.
+
+\subsection{Monitoring groups}
+
+The canonical model contains Identity, Measurement, Alarm, Thermal, Time,
+OperatingSystem, Network, Storage, Firmware, Services, Calibration, SDR,
+Configuration, Operations, and Health groups.  The two platform intake lists
+are the detailed selected SC integration catalogs: they contain the
+production-facing variables, controls, command readbacks, and requested model
+additions defined by this ICD, rather than all native diagnostic leaves.
+Unsupported legacy fields remain present only when needed for contract
+compatibility and carry a non-good StatusCode.
+
+\subsection{Numeric-field convention}
+
+In the companion intake spreadsheets, \emph{Sensor Span} is a verified
+software bound or documented presentation domain, \emph{Nominal Value} is the
+requested initial value or a clearly identified current observation, and
+\emph{Desired Range} is the initial normal or commissioning check band.  A
+wider authorized write range, where one exists, is stated in Notes.  The
+Low/High, delay, deadband, and action
+columns define Ignition alarm configuration only.  A blank cell means that no
+supported number or action has been established; it is not zero and it is not
+``not applicable'' data copied from the intake template.  Notes distinguish
+implemented bounds, current device/package values, measured observations, and
+provisional commissioning choices.
+
+\section{Configuration, Control, and Reset Semantics}
+
+\subsection{Control classification}
+
+\begin{longtable}{L{0.20\textwidth} L{0.24\textwidth} L{0.22\textwidth} L{0.24\textwidth}}
+\toprule
+\textbf{Operation} & \textbf{Kria native / OPC UA} & \textbf{Zed native} &
+\textbf{Zed initial OPC UA} \\
+\midrule
+Set alarm threshold & Yes / read-write & \code{set_th N} & Read-only until
+command-broker gate \\
+Set averaging / reads & Yes / read-write & Fixed RUN implementation; launch
+argument controls cadence, not the same averaging semantics & Read-only \\
+Clear alarm latch & Yes / \code{ClearLatch} & No equivalent latch protocol in
+the legacy display/controller path & Not supported \\
+Restart measurement engine & Yes / local allow-listed helper; not presently a
+canonical method & SysV \code{restart} & Not exposed initially \\
+Reboot controller & Linux capability / not a canonical method & Linux
+capability & Not exposed \\
+Capture ADC & Yes / \code{CaptureAdc} & \code{read_adc} & Not exposed initially \\
+Normalize magnitude & Yes / method supported & No validated equivalent
+& Not supported \\
+Set system time & Yes / \code{SetSystemTime} & \code{set_time}; target clock is
+historically stale & Not exposed initially \\
+Calibration sweep & Yes / \code{StartCalibration} & \code{CAL N} & Maintenance-
+only and disabled initially \\
+Direct relay/resistor state & Native maintenance capability & \code{set_res},
+\code{set_rly}, or reviewed diagnostic & Never a routine SC control \\
+\bottomrule
+\end{longtable}
+
+Thus the system is not monitor-only: GIZMo Kria already supports configuration
+and controlled actions.  The initial legacy adapter is deliberately
+monitor-only, even though its controller and hardware can perform several
+actions.  This is a safety and interface-maturity restriction, not a hardware
+limitation.
+
+\subsection{GIZMo Kria controls}
+
+GIZMo Kria exposes two writable UInt32 configuration variables.  Their stable
+NodeIds and ranges are:
+
+\begin{lstlisting}
+GIZMo.Configuration.ThresholdOhm              0 .. 1,000,000 ohm
+GIZMo.Configuration.AveragesPerCalculation    1 .. 1,000,000
+\end{lstlisting}
+
+The Kria package initializes the threshold and averaging count to 100.  For
+initial joint commissioning, SC shall request 100~ohm and verify the live
+\code{Measurement.ThresholdOhm} readback.  This value matches the sustained
+setpoint in the retained Kria history; a brief 2-kohm commissioning excursion
+is test evidence and is not a desired operating value.  Although the firmware
+accepts zero,
+the initial Ignition operator range is 1--500~ohm because zero effectively
+disables the resistance-threshold branch.  The accepted OPC~UA bounds remain
+unchanged.
+
+It exposes the following typed methods and command-result variable:
+
+\begin{lstlisting}
+GIZMo.Operations.ClearLatch()
+GIZMo.Operations.StartCalibration(UInt32)
+GIZMo.Operations.CaptureAdc()
+GIZMo.Operations.NormalizeMagnitude()
+GIZMo.Operations.SetSystemTime(DateTime)
+GIZMo.Configuration.LastCommandResult
+\end{lstlisting}
+
+\req{030} SC writes and methods shall be bounded, role-authorized, logged, and
+followed by readback of the resulting state.  A transport-level success alone
+does not prove that the requested physical state was reached.
+
+\req{031} Clearing the latch shall not suppress an active physical alarm.  A
+device restart or reboot shall not be described as ``clear latch.''
+
+\req{032} Restarting \code{gizmo-zmon.service} and rebooting the Kria are local
+maintenance/recovery actions until separately specified as canonical OPC~UA
+methods.  SC shall not infer those permissions from writable service-status
+nodes; service-status nodes are read-only.
+
+\subsection{Legacy GIZMo controlled expansion}\label{sec:legacy-control}
+
+The first ZedBoard release is a read-only validation pilot.  Afterwards,
+controls may be introduced one at a time through an allow-listed broker; SC
+shall never pass arbitrary shell text or raw MMIO values to the target.
+
+As verified on 12 August 2026, no OPC~UA server runs on the ZedBoard: the
+target listens on its legacy SSH and HTTP services, while TCP port 4840 is
+closed.  The preserved target also lacks the modern runtime required by the
+canonical server.  On 13 August 2026 the initial monitoring-only adapter was
+implemented and deployed on a controlled workstation at
+\code{opc.tcp://<site-assigned-legacy-adapter>:<port>}. It pins the ZedBoard host key, requires
+the controlled executable hash, and reads only a validated coherent completed
+RUN frame and process identity.  All OPC~UA variables are client read-only and
+all operation methods return \code{BadNotSupported}.  No historian or
+production Ignition binding is enabled until the Stage~0 gate below passes.
+This placement keeps the 2017 controller as the sole owner of FPGA/MMIO and
+relay resources.
+
+\begin{longtable}{L{0.16\textwidth} L{0.28\textwidth} L{0.36\textwidth}}
+\toprule
+\textbf{Stage} & \textbf{Candidate capability} & \textbf{Release gate} \\
+\midrule
+0 & Monitoring only & 100 coherent cycles match the local display; restart,
+stale, wrong-hash, partial-frame, and network-loss tests pass. \\
+1 & Measurement-engine restart/status & Exact target identity; serialized
+service ownership; timeout; post-restart PID/hash/freshness readback; audit. \\
+2 & Threshold write & Exact command grammar and numeric bounds; persisted or
+restart behavior documented; new threshold returned by the controller/display;
+authorization and rollback tested. \\
+3 & ADC capture and clock correction & Output-file ownership, bounded transfer,
+timeout, target-time quality, and restoration of normal \code{RUN} mode tested. \\
+4 & Calibration sweep & Approved isolated fixture; exclusive relay ownership;
+raw I/Q and state provenance; guaranteed HIGH~Z cleanup; independent validation;
+no automatic activation. \\
+\bottomrule
+\end{longtable}
+
+\req{033} A failed, timed-out, or interrupted legacy command shall leave the
+last verified normal measurement mode or report a latched command-failure state
+requiring maintenance.  It shall not report success from command submission
+alone.
+
+\req{034} Direct \code{set_res} and \code{set_rly} shall remain expert,
+isolated maintenance operations.  They shall not be general-purpose Ignition
+buttons or writable tag values.
+
+\req{035} A future restart method shall name its scope explicitly, for example
+\code{RestartMeasurementEngine}; a generic \code{Reset} method is prohibited.
+
+\section{Detector Control Display, Alarms, and History}
+
+\subsection{Display}
+
+Ignition shall show source identity, endpoint health, sample age, measurement
+quality, resistance/range, threshold, calibration state, and relevant control
+capabilities.  The hardware implementation shall be labelled \emph{GIZMo Kria
+(K26/KR260)} or \emph{Legacy GIZMo (ZedBoard)} wherever it could be ambiguous.
+HIGH~Z is rendered as a state, not as a precise endpoint.  The local display
+remains an independent commissioning reference; disagreement creates a
+diagnostic event and never triggers automatic calibration.
+
+\subsection{Sampling and freshness}
+
+Kria measurement data update nominally each second; platform data update at
+10- or 30-second cadence.  Clients should use subscriptions.  The Zed adapter
+may poll each second but shall increment \code{Measurement.Sequence} and write
+to Ignition history only when it detects a new coherent completed \code{RUN}
+result.  A stale source becomes non-good within two expected completed cycles.
+
+\subsection{Ignition history boundary}
+
+Ignition shall subscribe directly to each GIZMo OPC~UA endpoint and shall own
+the production tag history.  History shall preserve the reported device
+identity, OPC~UA source timestamp, StatusCode, null/HIGH~Z gaps, and command
+audit events.  The SC integration requires no intermediate history service
+between OPC~UA and Ignition.  Ignition history failure shall not stop local
+measurement or physical alarm indication.
+
+\subsection{Alarms and Detector Protection}
+
+SC shall alarm separately on physical ground-impedance alarm, communication
+loss, stale data, non-good measurement quality, identity mismatch, and command
+failure.  An unavailable legacy \code{Alarm.Active} remains unknown; it shall
+not be converted to clear/false.
+
+The following values are the initial SC configuration.  A provisional
+operating envelope is a rounded commissioning check band derived from retained
+or live observations; it is not automatically an alarm threshold.  Such
+values may be revised through change control without changing the OPC~UA
+contract.
+
+\begin{longtable}{L{0.23\textwidth} L{0.25\textwidth} L{0.25\textwidth} L{0.17\textwidth}}
+\toprule
+\textbf{Parameter} & \textbf{GIZMo Kria} & \textbf{Legacy GIZMo} &
+\textbf{Basis/status} \\
+\midrule
+Resistance presentation domain & 0--500~ohm; higher values are HIGH~Z &
+0--500~ohm documented display domain; higher values are HIGH~Z & Kria
+implemented; legacy metrology still requires installed-loop validation \\
+\addlinespace
+Threshold accepted range & Firmware/OPC~UA: 0--1,000,000~ohm; initial operator
+range: 1--500~ohm & Documented operating policy: integer 1--500~ohm & Verified
+implementation/documentation bounds \\
+\addlinespace
+Initial threshold & 100~ohm; package default and sustained retained-history
+value & 100~ohm; confirmed in 15 direct controller frames and 27 deployed-
+adapter pilot cycles & Requested initial setpoint \\
+\addlinespace
+Resistance comparison & Alarm when resistance is strictly less than the live
+threshold & Alarm-return bits assert when rounded displayed resistance is
+strictly less than threshold & Recovered device behavior \\
+\addlinespace
+Additional Kria phase alarm & If resistance is greater than 8~ohm and the
+absolute interpolated-versus-\code{atan2} phase difference exceeds
+1.5~degrees & No validated equivalent & Implemented Kria logic \\
+\addlinespace
+Ignition physical-alarm trigger & \code{Alarm.Active=True}, 0-s on-delay, no
+additional SC hysteresis & Disabled until actual return-word readback is
+exposed and validated; then the same Boolean trigger/timing applies & Initial
+requested SC configuration \\
+\addlinespace
+Automatic action & Annunciate and direct operator response; no automatic power
+or protection command & Same & Initial interface scope \\
+\bottomrule
+\end{longtable}
+
+The Kria measurement engine contains no alarm on-delay or hysteresis in the
+reviewed decision path.  The recovered legacy display comparison likewise has
+no delay or hysteresis.  SC therefore adds neither: the Ignition on-delay is
+0~s and the deadband field is blank.  Ignition shall alarm on the Boolean
+\code{Alarm.Active}; it shall not create a second resistance comparator that
+could disagree with the phase-aware Kria decision or the legacy rounded-value
+decision.
+
+The retained Kria SQLite replica covers 27 July through 3 August 2026 and
+contains 560,762 fast samples, 56,082 platform samples, 9,457 minute rollups,
+and 227 transition events.  It confirms a sustained 100-ohm threshold, a
+stable 1436-Hz stimulus value, HIGH~Z as the predominant normal range state,
+and both implemented alarm-reason branches.  Its steady-state distributions
+are used to populate provisional Desired Range fields for temperatures,
+utilization, available memory, phase, and lock-in counts.  Commissioning and
+startup excursions are retained in Notes but are not promoted to desired
+values.  The retained run was captured under model 1.3.0 and the then-installed
+runtime 0.4.4; the maintained source baseline reviewed for this ICD is runtime
+0.4.5 at commit \code{9d7db3a}.
+
+A read-only live check of the connected legacy board on 12 August 2026
+collected 15 coherent completed \code{RUN} frames from the unchanged
+\code{GIZMO.elf}.  The controller returned a 100-ohm threshold, 15
+accumulations, 111.554--111.902~ohm calculated resistance, and a 112-ohm green
+display.  The I, Q, magnitude, and derived \code{atan2} observations are
+recorded in the legacy workbook as same-setup commissioning envelopes.  They
+do not validate the missing CT/inductor path or the full detector-loop
+calibration.
+
+The deployed adapter subsequently captured 27 contiguous cycles
+(\code{Sequence} 21--47) on 13 August 2026.  Resistance was
+111.465703--112.010978~ohm (mean 111.722419~ohm), the threshold remained
+exactly 100~ohm, and the calculated legacy display-equivalent rounding was
+112~ohm in 26 cycles and 111~ohm in one.  Target communication was then lost
+before 100 cycles.  The captured values carried
+\code{UncertainLastUsableValue} and \code{Measurement.Quality=Uncertain},
+consistent with the unvalidated legacy measurement path; after the loss, the
+adapter exposed \code{BadNoCommunication} and \code{Health.Overall=Failed}
+rather than fresh data.  This adds evidence for the attributes and loss
+semantics but does not close \openitem{05}.
+
+No reviewed GIZMo or SC source establishes numerical temperature, CPU,
+memory, storage, or similar supervisory alarm thresholds.  Observed envelopes
+therefore remain monitor/trend checks and the spreadsheet alarm cells remain
+intentionally blank.  Approved limits can be added without changing the
+OPC~UA NodeIds.
+
+Priority, response ownership, and any Detector Protection action still require
+joint approval by the GIZMo owner, SC, DPS, and operations.  A required hard
+protective action shall not depend only on Linux, OPC~UA, or Ignition.
+
+\section{Calibration and Maintenance}
+
+\subsection{GIZMo Kria}
+
+GIZMo Kria calibration is a controlled maintenance method, not an automatic
+SC reaction.  Production tables shall be staged, validated, content-hashed,
+activated atomically, and rollback-tested.  Success, error, timeout, process
+termination, and power-interruption paths shall restore and verify the normal
+relay state.  Calibration state and the active table identities are published
+through OPC~UA.
+
+\subsection{Legacy GIZMo}
+
+The legacy \code{CAL N} command selects 32 R1--R5 states and logs lock-in
+measurements.  It does not fit, validate, persist, or activate a transfer
+function; it does not use the abandoned \code{calib2.txt}; and it does not
+guarantee normal-state restoration at completion.  Starting \code{RUN}
+restores the normal \code{SetRes(-1)} selection, but an interrupted calibration
+can leave a finite test resistance selected.
+
+Accordingly, the initial endpoint reports
+\code{Calibration.State=CharacterizationOnly} or \code{Unvalidated}.  A future
+calibration workflow requires the restored CT/saturable-inductor fixture,
+measured standards, a common runtime/calibration acquisition primitive, raw I/Q
+and relay-state records, up/down sweeps, blind validation, clipping and
+hysteresis checks, guaranteed cleanup, atomic model activation, and rollback.
+Capacitance remains unsupported until mixed R/C characterization establishes a
+defensible model.
+
+\section{Security and Access Control}
+
+Both endpoints belong on the restricted controls network or behind approved
+authenticated transport.  Final certificates, trust lists, usernames/roles,
+and firewall rules are installation data jointly assigned by SC and site
+cybersecurity.
+
+GIZMo Kria currently supports an explicitly configured insecure OPC~UA policy
+for an isolated network; serialization is not encryption.  Production
+deployment shall document whether that exception is accepted or deploy the
+site certificate and role policy.
+
+The legacy commissioning transport shall pin the SSH host key and use a
+restricted identity/command.  Unrestricted root SSH is not a production
+command interface.  The control broker shall allow only typed operations with
+bounds, mutual exclusion, timeout, readback, audit, and failure cleanup.  It
+shall not expose arbitrary command strings, environment values, file paths,
+shell execution, FPGA MMIO, or relay bit patterns.
+
+Credentials, private keys, and unbounded log text shall not be published as
+OPC~UA values or Ignition history/audit events.
+
+\section{Responsibilities}
+
+\begin{longtable}{L{0.21\textwidth} L{0.34\textwidth} L{0.35\textwidth}}
+\toprule
+\textbf{Area} & \textbf{GIZMo system owner} & \textbf{SC / other group} \\
+\midrule
+Physical system & Supply, label, install, maintain, and document the chassis,
+analog chain, CT/inductor, calibrator, display, power, alarms, and cables. &
+I\&I provides approved routing and installation support; SC does not alter the
+analog or ground wiring. \\
+\addlinespace
+Device software & Maintain Kria runtime/overlay and the preserved Zed image;
+define meanings, control effects, safe states, and rollback. & SC supplies the
+integration framework and endpoint host resources where applicable. \\
+\addlinespace
+OPC~UA & Implement and test the canonical producer/adapter and readbacks. & SC
+integrates tags, quality, certificates, roles, alarming, and displays in
+Ignition. \\
+\addlinespace
+Controls & Define typed operations, bounds, state transitions, and cleanup. &
+SC implements role-authorized operator workflow and audit; operations approves
+production use. \\
+\addlinespace
+Calibration & Own standards, method, fits, validation, activation, rollback,
+and relay cleanup. & SC displays state/history and provides authorized workflow;
+it does not infer validity. \\
+\addlinespace
+History & Publish device identity, quality, source time, model version, and
+command audit through OPC~UA. & SC configures Ignition tag history, retention,
+restore, and operational access. \\
+\addlinespace
+Protection & Define hazards and required physical response. & DPS owns reviewed
+hard protection; SC owns supervisory alarm presentation. \\
+\bottomrule
+\end{longtable}
+
+\section{Test Stand, Commissioning, and Acceptance}
+
+\subsection{Physical and common interface acceptance}
+
+Before SC sign-off, the parties shall:
+
+\begin{itemize}
+  \item verify connector labels, power, fusing, shield/ground assignment,
+  CT polarity, and the approved stimulus path;
+  \item resolve the namespace URI and verify every required NodeId, datatype,
+  access class, EngineeringUnits value, StatusCode, and source timestamp with a
+  generic OPC~UA client;
+  \item verify DeviceId, platform, runtime/ELF identity, endpoint, and time;
+  \item force disconnect, stale data, restart, and out-of-range conditions and
+  confirm non-good quality and last-good semantics;
+  \item confirm HIGH~Z is never persisted as a fabricated numeric value;
+  \item verify Ignition display, alarm journal, command audit, trends, and
+  history identity separation; and
+  \item demonstrate that OPC~UA or Ignition-history failure does not stop local
+  measurement or physical alarm indication.
+\end{itemize}
+
+\subsection{GIZMo Kria acceptance}
+
+All maintained runtime tests shall pass.  Threshold and averaging writes shall
+enforce type and range; every method shall report a bounded result.  Latch clear,
+time correction, ADC capture, magnitude normalization, and calibration shall be
+tested with authorization and readback.  Calibration testing shall include
+error/interruption cleanup and rollback.  A 24-hour soak and power-interruption
+recovery test shall complete before production approval.
+
+\subsection{Legacy GIZMo monitoring acceptance}
+
+At least 100 completed cycles shall match the physical display's rounded
+resistance, including identical consecutive readings.  Wrong hash, multiple or
+changed PID, target restart, adapter restart, network outage, partial update,
+stale frame, and non-finite values shall not produce a false fresh sample.
+During this pilot, every write/method shall fail explicitly without reaching
+the controller or relay hardware.  Ignition shall retain the ZedBoard samples
+with their reported device identity, source timestamp, and StatusCode.
+
+\subsection{Legacy GIZMo control acceptance}
+
+Each control stage in Section~\ref{sec:legacy-control} requires a separate test
+record.  Tests shall cover allowed and rejected values, simultaneous requests,
+broker/SSH loss, controller crash, timeout, power interruption, command
+readback, audit completeness, safe-state restoration, and rollback to the
+monitoring-only release.  Calibration and relay tests additionally require an
+approved isolated electrical setup and independent observation of the restored
+HIGH~Z state.
+
+\section{Open Items and Change Control}
+
+\begingroup
+\small
+\begin{longtable}{L{0.13\textwidth} L{0.57\textwidth} L{0.20\textwidth}}
+\toprule
+\textbf{ID} & \textbf{Open item / release gate} & \textbf{Owner} \\
+\midrule
+\openitem{01} & Assign EDMS identifier, reviewers, approvers, and controlled
+distribution. & GIZMo + SC \\
+\openitem{02} & Assign production endpoint hostnames/IPs, switch ports,
+certificate policy, trust lists, roles, and firewall rules. & SC + cybersecurity \\
+\openitem{03} & Review the requested 100-ohm threshold and zero added
+delay/no-hysteresis configuration; approve final priority, response owner, and
+any DPS action. & GIZMo + SC + DPS \\
+\openitem{04} & Add explicit Platform, AcquisitionAdapter,
+ValidatedResistanceMaximumOhm, and capability nodes in a backward-compatible
+model revision. & GIZMo software \\
+\openitem{05} & Complete the ZedBoard 100-cycle read-only pilot. & GIZMo + SC \\
+\openitem{06} & Expose and validate off-board readback of the actual legacy
+alarm-return word used by the controller.  The bit meanings and physical SPI
+exchange have been recovered; the adapter shall not synthesize this readback
+from resistance. & GIZMo firmware \\
+\openitem{07} & Define, implement, and test the allow-listed legacy command
+broker beginning with measurement-engine restart and threshold control. &
+GIZMo software + SC \\
+\openitem{08} & Decide whether a canonical
+\code{RestartMeasurementEngine} method is required for both platforms; do not
+add a generic reset command. & GIZMo + SC + operations \\
+\openitem{09} & Restore the CT/saturable-inductor fixture and validate legacy
+resistance/phase calibration with measured external standards. & GIZMo hardware \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+Any change to a connector, electrical reference, NodeId, datatype, physical
+meaning, access class, command effect, alarm ownership, calibration authority,
+safe state, or historized-field set requires joint review and a new controlled
+revision, including review of source identity, quality semantics, and retention.
+
+\end{document}
