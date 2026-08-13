@@ -23,15 +23,16 @@ The current document is a dual-platform interface definition covering:
 - `cernatlasnote.cls` and `images/logosolo.png`: document build dependencies.
 
 The signal attributes were reconciled against the maintained Kria interface,
-retained Kria history, read-only observations from the connected legacy unit,
-and recovered engineering material. Proposed values, commissioning
-observations, unsupported behavior, and unresolved acceptance gates are
-identified as such in the document and workbooks.
+retained Kria history, observations and bounded control acceptance from the
+connected legacy unit, and recovered engineering material. Proposed values,
+commissioning observations, unsupported behavior, and unresolved acceptance
+gates are identified as such in the document and workbooks.
 
-The legacy OPC UA server is an expected integration dependency and remains
-subject to the legacy commissioning gates in the ICD. The Ignition project can
-be prepared against the common namespace without treating that server as
-accepted or deployed.
+The native legacy OPC UA server is deployed on the ZedBoard and remains subject
+to the commissioning gates in the ICD. Anonymous access is read-only; its sole
+validated authenticated write is the bounded legacy threshold. The Ignition
+project can be prepared against the common namespace without treating the open
+100-cycle physical-display and site-security acceptance items as complete.
 
 ## Repository collection
 
