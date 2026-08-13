@@ -10,12 +10,16 @@ The current document is a dual-platform interface definition covering:
 
 [Open the public-review ICD](gizmo_icd_public.pdf)
 
+[Open the human-facing ground-reference monitoring guide](guides/ground-reference-monitoring/GIZMO_Ground_Reference_Impedance_Monitoring.pdf)
+
 ## Contents
 
 - `gizmo_icd_public.tex` and `gizmo_icd_public.pdf`: source and generated ICD;
 - `deliverables/GIZMo_Kria_DCS_Intake.xlsx`: Kria signal/control intake table;
 - `deliverables/GIZMo_ZedBoard_DCS_Intake.xlsx`: legacy signal/control intake
   table;
+- `guides/ground-reference-monitoring/`: source and generated PDF for the
+  connection, power-up, and construction-monitoring guide;
 - `cernatlasnote.cls` and `images/logosolo.png`: document build dependencies.
 
 The signal attributes were reconciled against the maintained Kria interface,
@@ -23,6 +27,26 @@ retained Kria history, read-only observations from the connected legacy unit,
 and recovered engineering material. Proposed values, commissioning
 observations, unsupported behavior, and unresolved acceptance gates are
 identified as such in the document and workbooks.
+
+The legacy OPC UA server is an expected integration dependency and remains
+subject to the legacy commissioning gates in the ICD. The Ignition project can
+be prepared against the common namespace without treating that server as
+accepted or deployed.
+
+## Repository collection
+
+- [`marroyav/GIZMo`](https://github.com/marroyav/GIZMo): Kria runtime and
+  canonical OPC UA model;
+- [`marroyav/gizmo-ignition`](https://github.com/marroyav/gizmo-ignition):
+  dual-device Ignition resources and history tooling;
+- [`marroyav/gizmo-zedboard-legacy`](https://github.com/marroyav/gizmo-zedboard-legacy):
+  publication-safe legacy display firmware and hardware contract;
+- [`marroyav/gizmo-data-archive`](https://github.com/marroyav/gizmo-data-archive):
+  historian archive schema and verification tools;
+- this repository: canonical public ICD, intake workbooks, and operator guide;
+  and
+- [`marroyav/sc_interface`](https://github.com/marroyav/sc_interface): the
+  broader PDS Slow Controls interface with a snapshot of the GIZMo ICD package.
 
 ## Status and publication boundary
 
