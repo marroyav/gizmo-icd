@@ -15,6 +15,11 @@ work procedure. Released grounding drawings, ORC, LOTO, hazard analysis,
 approved work controls, calibration, site configuration, and responsible
 sign-off take precedence.
 
+The companion ICD defines one hardware-neutral `urn:fnal:gizmo` OPC UA
+contract to which any GIZMo hardware implementation must conform. The Kria
+server is the current reference implementation; the ZedBoard server is under
+development and is not commissioned.
+
 Build with:
 
 ```sh

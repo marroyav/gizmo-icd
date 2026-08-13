@@ -88,8 +88,9 @@
 \toprule
 Document status & Commissioning draft; technical and electrical-safety approval required before field use. \\
 Primary audience & Installation coordinators, operators, Slow Controls developers, and authorized electrical personnel. \\
-Current hardware basis & Kria-based \GIZMO{} rack described by DUNE-doc-35392-v2; the public software interface is the canonical \texttt{urn:fnal:gizmo} OPC~UA model. \\
+Current hardware basis & Kria-based \GIZMO{} rack described by DUNE-doc-35392-v2; it is the currently implemented reference for the public interface. \\
 Legacy basis & ZedBoard/Zynq \GIZMO{} documents DUNE-doc-1805-v12, 25365-v1, and 27482-v2. \\
+Machine contract & The companion GIZMo--SC ICD defines the hardware-neutral, canonical \texttt{urn:fnal:gizmo} OPC~UA model; any \GIZMO{} hardware implementation shall conform to it. Current released model baseline: 1.3.1. \\
 Controlled procedure & Procore: FDC $>$ Administrative $>$ Work Planning and Controls $>$ SOP004 GIZMO (current approved revision). \\
 \bottomrule
 \end{tabularx}
@@ -128,12 +129,14 @@ Kria platform cadence & $0.1\,\mathrm{Hz}$ & Implemented cadence for chartable o
 
 The legacy program automatically loads its $1.4\,\mathrm{kHz}$ waveform when the \texttt{RUN} command starts. A 2021 design study suggested approximately $3\,\mathrm{kHz}$ for an assumed Far Detector parasitic capacitance, but that was a model, not a commissioned setting. The maintained Kria source defaults to 1436~Hz; the installed value must still be selected from an in-situ frequency sweep and calibration, then frozen in the approved configuration.
 
-The Kria machine interface is OPC~UA Binary over UA TCP using namespace URI
-\texttt{urn:fnal:gizmo}. Site endpoints, certificates, trust lists, roles, and
-operator authorization remain controlled configuration. A legacy OPC~UA
-server is under development against the same namespace. Slow Controls may
-prepare against that contract, but shall not treat the legacy connection as
-commissioned until its acceptance gates pass.
+The GIZMo--SC ICD defines one hardware-neutral OPC~UA contract. Its namespace
+URI is \nolinkurl{urn:fnal:gizmo}. Any \GIZMO{} hardware implementation shall
+conform to the contract.  The Kria server is the currently implemented reference. Site
+endpoints, certificates, trust lists, roles, and operator authorization remain
+controlled configuration. A ZedBoard server is under development as an
+independent conforming producer. Slow Controls may prepare against the common
+contract, but shall not treat the ZedBoard connection as commissioned until its
+contract, identity, non-interference, and measurement-acceptance gates pass.
 
 \section{Conceptual connection}
 
@@ -314,9 +317,10 @@ Safety path and CT routing match released drawing & & \\
 
 \subsection{What remains site-controlled}
 
-The public Kria runtime defines the component services, canonical OPC~UA
-namespace, typed monitoring values, bounded configuration writes, operations,
-historian, and dashboard. It intentionally does not publish production
+The GIZMo--SC ICD defines the canonical OPC~UA namespace, types, meanings,
+quality and timestamp rules, configuration writes, and operations. The public
+Kria runtime implements the present baseline and also defines its own component
+services, historian, and dashboard. It intentionally does not publish production
 endpoints, credentials, certificate material, target images, calibration
 state, network configuration, or authorization policy. The controlled
 revision of this guide must identify the approved runtime/configuration,
@@ -528,12 +532,16 @@ RES=154.8  TH=100 ( mag=268.640, I=265.217, Q=-42.746 )
 
 The public LArTF client polls the shell every two seconds and writes \texttt{RES}, \texttt{TH}, \texttt{mag}, \texttt{I}, and \texttt{Q} to InfluxDB. Its hostname, account, host-key policy, paths, and authentication behavior are historical examples and must not be reused as a production security design.
 
-The planned legacy OPC~UA server is expected to publish the common
-\texttt{urn:fnal:gizmo} contract and explicit non-good quality for unsupported
-or stale values. This guide assumes that work proceeds, but the server remains
-a commissioning dependency: Ignition history and alarms shall not be enabled
-until identity, coherent-cycle, display-comparison, restart, network-loss, and
-read-only-boundary tests pass.
+The planned ZedBoard OPC~UA server shall conform to the hardware-neutral
+\texttt{urn:fnal:gizmo} contract, preserve a distinct endpoint and device
+identity, and publish explicit non-good quality for unsupported or stale
+values. It shall operate as a non-owning observational sidecar: start, stop,
+upgrade, disconnect, load, or failure of the server must not change either the
+Kria system or the preserved ZedBoard controller, display, stimulus, relay, or
+physical alarm behavior. The server remains under development. Ignition
+history and alarms shall not be enabled until schema, identity, coherent-cycle,
+display-comparison, restart, network-loss, and non-interference tests pass; all
+ZedBoard OPC~UA writes and methods remain disabled until separately accepted.
 
 \subsection{Legacy-only checks}
 
@@ -625,8 +633,9 @@ Open issues and handoff & \\
   \item Public legacy client source, \texttt{gizmo\_control}.\\
   \url{https://github.com/vanessacerrone/gizmo_control}
 
-  \item Public GIZMo Kria runtime, OPC~UA contract, historian, and dashboard
-  documentation.\\
+  \item Public GIZMo Kria runtime, OPC~UA reference implementation, historian,
+  and dashboard documentation; the companion ICD remains the machine-interface
+  authority.\\
   \url{https://github.com/marroyav/GIZMo}
 
   \item Public GIZMo Slow Controls ICD and dual-platform DCS intake package.\\

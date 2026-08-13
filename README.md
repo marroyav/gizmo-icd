@@ -3,7 +3,9 @@
 This repository is the publication-safe review package for the DUNE Ground
 Impedance Monitor (GIZMo) Slow Controls interface.
 
-The current document is a dual-platform interface definition covering:
+The current document defines one hardware-neutral GIZMo--Slow Controls OPC UA
+contract. Any GIZMo hardware implementation must conform to it. The current
+implementation views cover:
 
 - GIZMo Kria, based on the AMD/Xilinx K26 SOM and KR260 carrier; and
 - legacy GIZMo, based on the ZedBoard and the preserved controller runtime.
@@ -20,30 +22,38 @@ The current document is a dual-platform interface definition covering:
   table;
 - `guides/ground-reference-monitoring/`: source and generated PDF for the
   connection, power-up, and construction-monitoring guide;
+- `reviews/remote-contract-consistency-2026-08-13.md`: read-only comparison of
+  the contract against the published repository heads;
 - `cernatlasnote.cls` and `images/logosolo.png`: document build dependencies.
 
-The signal attributes were reconciled against the maintained Kria interface,
-retained Kria history, read-only observations from the connected legacy unit,
-and recovered engineering material. Proposed values, commissioning
-observations, unsupported behavior, and unresolved acceptance gates are
-identified as such in the document and workbooks.
+The signal attributes were reconciled against the maintained Kria
+implementation, retained Kria history, read-only observations from the
+connected legacy unit, the off-board adapter pilot, and recovered engineering
+material. These are evidence for the contract, not separate sources of
+interface authority. Proposed values, commissioning observations, unsupported
+behavior, and unresolved acceptance gates are identified as such in the
+document and workbooks.
 
-The legacy OPC UA server is an expected integration dependency and remains
-subject to the legacy commissioning gates in the ICD. The Ignition project can
-be prepared against the common namespace without treating that server as
-accepted or deployed.
+The Kria endpoint is the currently implemented reference for model 1.3.1. A
+target-native ZedBoard OPC UA producer is under development as an independent,
+conforming implementation. It is not described as deployed or accepted, its
+initial integration profile is monitoring-only, and it must not interfere with
+either the Kria system or the preserved ZedBoard controller. Ignition can be
+prepared against the common namespace without treating the legacy connection,
+history, alarms, or controls as commissioned.
 
 ## Repository collection
 
-- [`marroyav/GIZMo`](https://github.com/marroyav/GIZMo): Kria runtime and
-  canonical OPC UA model;
+- [`marroyav/GIZMo`](https://github.com/marroyav/GIZMo): Kria runtime and the
+  current model 1.3.1 reference implementation;
 - [`marroyav/gizmo-ignition`](https://github.com/marroyav/gizmo-ignition):
   dual-device Ignition resources and history tooling;
 - [`marroyav/gizmo-zedboard-legacy`](https://github.com/marroyav/gizmo-zedboard-legacy):
-  publication-safe legacy display firmware and hardware contract;
+  publication-safe legacy display firmware and recovered hardware record;
 - [`marroyav/gizmo-data-archive`](https://github.com/marroyav/gizmo-data-archive):
   historian archive schema and verification tools;
-- this repository: canonical public ICD, intake workbooks, and operator guide;
+- this repository: authoritative hardware-neutral public ICD, intake
+  workbooks, and operator guide;
   and
 - [`marroyav/sc_interface`](https://github.com/marroyav/sc_interface): the
   broader PDS Slow Controls interface with a snapshot of the GIZMo ICD package.
@@ -55,7 +65,7 @@ revision and does not represent approval by GIZMo, DUNE Slow Controls,
 Detector Protection, operations, or cybersecurity.
 
 Site endpoints, credentials, access details, executable fingerprints,
-controlled source workbooks, live databases, device images, and private
+controlled source records, live databases, device images, and private
 commissioning artifacts are intentionally excluded. Use the controlled review
 workflow for commissioning and formal sign-off.
 
