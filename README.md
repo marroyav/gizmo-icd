@@ -22,26 +22,41 @@ The current document is a dual-platform interface definition covering:
   connection, power-up, and construction-monitoring guide;
 - `cernatlasnote.cls` and `images/logosolo.png`: document build dependencies.
 
+The Kria implementation and its generated model-1.3.1 schema are the
+authoritative GIZMo--Slow Controls OPC UA contract. The ZedBoard server is a
+separate conforming implementation in development: it keeps the canonical
+NodeIds, datatypes, units, ranges, and meanings while reporting unsupported
+capabilities explicitly. Slow Controls connects to the two endpoints
+independently; neither server proxies or controls the other.
+
+`HIGH Z` is a valid good-quality range state. The contract publishes
+`ResistanceRange=OutOfRange` with a non-numeric resistance and `Good` status;
+it never substitutes 500 or 999 ohm as a measured value.
+
 The signal attributes were reconciled against the maintained Kria interface,
 retained Kria history, observations and bounded control acceptance from the
 connected legacy unit, and recovered engineering material. Proposed values,
 commissioning observations, unsupported behavior, and unresolved acceptance
 gates are identified as such in the document and workbooks.
 
-The native legacy OPC UA server is deployed on the ZedBoard and remains subject
-to the commissioning gates in the ICD. Anonymous access is read-only; its sole
-validated authenticated write is the bounded legacy threshold. The Ignition
-project can be prepared against the common namespace without treating the open
-100-cycle physical-display and site-security acceptance items as complete.
+The native legacy OPC UA server is under development for the ZedBoard and
+remains subject to the commissioning gates in the ICD. A target-side
+development build exercised the bounded threshold transaction, but that is not
+production acceptance. The intended profile keeps anonymous access read-only
+and permits only an authenticated 0--1023-ohm subset of the canonical threshold
+write. The Ignition project can be prepared against the common namespace
+without treating the open 100-cycle physical-display and site-security items
+as complete.
 
 ## Repository collection
 
 - [`marroyav/GIZMo`](https://github.com/marroyav/GIZMo): Kria runtime and
-  canonical OPC UA model;
+  authoritative, generated OPC UA contract;
 - [`marroyav/gizmo-ignition`](https://github.com/marroyav/gizmo-ignition):
   dual-device Ignition resources and history tooling;
 - [`marroyav/gizmo-zedboard-legacy`](https://github.com/marroyav/gizmo-zedboard-legacy):
-  publication-safe legacy display firmware and hardware contract;
+  publication-safe legacy display firmware, contract snapshot, and ZedBoard
+  conformance profile;
 - [`marroyav/gizmo-data-archive`](https://github.com/marroyav/gizmo-data-archive):
   historian archive schema and verification tools;
 - this repository: canonical public ICD, intake workbooks, and operator guide;

@@ -15,6 +15,10 @@ work procedure. Released grounding drawings, ORC, LOTO, hazard analysis,
 approved work controls, calibration, site configuration, and responsible
 sign-off take precedence.
 
+The guide is Kria-focused. The companion ICD defines the Kria OPC UA model as
+the GIZMo--Slow Controls contract and treats any ZedBoard server as an
+independent conforming implementation.
+
 Build with:
 
 ```sh
