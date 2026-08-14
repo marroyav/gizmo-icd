@@ -3,7 +3,10 @@
 This repository is the publication-safe review package for the DUNE Ground
 Impedance Monitor (GIZMo) Slow Controls interface.
 
-The current document is a dual-platform interface definition covering:
+The Kria implementation generates the authoritative, hardware-neutral
+GIZMo--Slow Controls OPC UA contract, and this document records that contract
+for review and integration. Any other GIZMo hardware implementation must
+conform to it. The current implementation views cover:
 
 - GIZMo Kria, based on the AMD/Xilinx K26 SOM and KR260 carrier; and
 - legacy GIZMo, based on the ZedBoard and the preserved controller runtime.
@@ -20,6 +23,8 @@ The current document is a dual-platform interface definition covering:
   table;
 - `guides/ground-reference-monitoring/`: source and generated PDF for the
   connection, power-up, and construction-monitoring guide;
+- `reviews/remote-contract-consistency-2026-08-13.md`: read-only comparison of
+  the contract against the published repository heads;
 - `cernatlasnote.cls` and `images/logosolo.png`: document build dependencies.
 
 The Kria implementation and its generated model-1.3.1 schema are the
@@ -59,7 +64,8 @@ as complete.
   conformance profile;
 - [`marroyav/gizmo-data-archive`](https://github.com/marroyav/gizmo-data-archive):
   historian archive schema and verification tools;
-- this repository: canonical public ICD, intake workbooks, and operator guide;
+- this repository: human-facing public ICD, intake workbooks, operator guide,
+  and change-control record for the Kria-generated contract;
   and
 - [`marroyav/sc_interface`](https://github.com/marroyav/sc_interface): the
   broader PDS Slow Controls interface with a snapshot of the GIZMo ICD package.
@@ -71,7 +77,7 @@ revision and does not represent approval by GIZMo, DUNE Slow Controls,
 Detector Protection, operations, or cybersecurity.
 
 Site endpoints, credentials, access details, executable fingerprints,
-controlled source workbooks, live databases, device images, and private
+controlled source records, live databases, device images, and private
 commissioning artifacts are intentionally excluded. Use the controlled review
 workflow for commissioning and formal sign-off.
 

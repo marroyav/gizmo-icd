@@ -59,9 +59,9 @@
 \begin{center}
 \fbox{\begin{minipage}{0.91\textwidth}
 \textbf{Public review copy.} This file is not an approved or controlled EDMS
-revision. Site endpoints, executable fingerprints, access details, and source
-workbooks are omitted. Use the controlled delivery package for commissioning
-and acceptance.
+revision. Site endpoints, executable fingerprints, access details, and
+controlled source records are omitted. Use the controlled delivery package for
+commissioning and acceptance.
 \end{minipage}}
 \end{center}
 
@@ -106,7 +106,7 @@ expansion gates. \\
 \addlinespace
 0.3 & 2026-08-12 & M. Arroyave & Defined GIZMo Kria and legacy GIZMo as two
 supported hardware implementations, identified the K26 SOM/KR260 and ZedBoard
-platforms, and removed platform-precedence requirements. \\
+platforms, and removed hardware-performance-precedence requirements. \\
 \addlinespace
 0.4 & 2026-08-12 & M. Arroyave & Audited all workbook numeric fields against
 the maintained Kria runtime, recovered legacy behavior, engineering records,
@@ -131,7 +131,7 @@ the partial 27-cycle legacy-adapter pilot without closing its acceptance gate. \
 \addlinespace
 0.7-public & 2026-08-13 & M. Arroyave & Created a clearly labelled public
 review copy with site endpoints, executable fingerprints, access details, and
-controlled source workbooks omitted. \\
+controlled source records omitted. \\
 \addlinespace
 0.8-public & 2026-08-13 & M. Arroyave & Added the public human-facing
 connection, power-up, and construction-monitoring guide; identified the
@@ -442,7 +442,7 @@ measurements. The conforming server shall consume only validated complete record
 
 \section{Public OPC UA Application Interface}
 
-\subsection{Endpoint and information model}
+\subsection{Normative information model and endpoint identity}
 
 The public protocol is OPC~UA Binary over UA TCP. Each producer uses a
 separately assigned endpoint:
@@ -472,10 +472,63 @@ GIZMo.Calibration.*
 GIZMo.Health.*
 \end{lstlisting}
 
-Model 1.x revisions preserve NodeId, datatype, rank, and physical meaning.
-A breaking change requires a new major-version namespace.  The recovered
-\code{SimpleOPCUAServer/CommandObject} tree may remain for migration, but new
-SC integration shall use the canonical model.
+The current released information-model baseline is version 1.3.1, published
+14 August 2026.  Rows labelled ``REQUIRED MODEL 1.4'' in the intake workbooks are
+forward requirements under review; they are not part of model 1.3.1 and shall
+not be advertised under that version.  The workbooks are selected SC
+integration profiles and do not create independent NodeIds or semantics.  If a
+workbook entry and normative prose conflict, the conflict shall be resolved by
+joint GIZMo--SC change control before implementation or commissioning.
+
+The model-1.3.1 machine-readable contract contains 43 objects, 457 variables,
+and five methods. Its embedded canonical contract digest is:
+
+\begin{lstlisting}
+contract_sha256=25d758ecb65db09a03f5acbbf39db714caa711efbac4d4b286c3ff63b2459201
+file_sha256=1a09ec04deb03355a1603e7c2c1279511e520906386981aab064cd9a629afe5a
+\end{lstlisting}
+
+That generated artifact is both the normative machine-readable contract and a
+reproducible conformance fixture. The maintained Kria implementation is the
+contract authority; this ICD is its human-facing requirements and
+change-control companion. Reviewed changes shall be generated from the Kria
+model and synchronized to consumers and conforming-producer profiles.
+
+Model 1.x revisions preserve NodeId, node class, datatype, rank, units, method
+signature, and physical meaning.  A breaking change requires a new major-
+version namespace.  A shared model revision requires joint GIZMo--SC ICD change
+control; no conforming producer or consumer may unilaterally publish one.  A platform-
+specific extension, if ever required, shall use a different namespace and
+shall not be required by SC.  The recovered
+\code{SimpleOPCUAServer/CommandObject} tree may remain outside the SC boundary
+for migration, but new SC integration shall use only the canonical model.
+
+\req{016} A GIZMo producer claiming conformance shall match this contract's
+canonical browse paths, NodeIds, node classes, datatypes, ranks, units,
+EngineeringUnits/EURange metadata where defined, method signatures,
+StatusCodes, and source-timestamp meanings for the model version it reports.
+Its effective access shall be no more permissive than the contract and shall
+reflect the authenticated role and advertised device capability.  A producer
+shall not report a model version that has not been released through ICD change
+control.
+
+\req{017} Canonical nodes required by the producer's reported model version
+shall remain discoverable when a hardware implementation cannot supply their
+values.  Unsupported or unavailable data shall carry
+\code{BadNotSupported}, \code{BadDataUnavailable}, or another specific non-good
+StatusCode; unsupported methods shall fail with \code{BadNotSupported}.  A
+platform limitation shall not be hidden by deleting, retyping, renaming, or
+silently repurposing a canonical node.
+
+\req{018} Address-space conformance does not grant control authority.  SC shall
+enable a write or method only when this contract defines it, the producer
+advertises the capability, the authenticated role permits it, and the operation
+passes the separate security, serialization, non-interference, readback,
+rollback, and commissioning gates in this ICD. The ZedBoard development
+profile may expose only the bounded
+\code{Configuration.ThresholdOhm} write described in
+Section~\ref{sec:legacy-control}; production use remains disabled until the
+identity, security, non-interference, readback, and commissioning gates pass.
 
 The ZedBoard implementation shall expose the same required baseline nodes and
 canonical metadata. Unsupported values remain present with the most specific
@@ -544,9 +597,10 @@ Set alarm threshold & Yes / read-write & Recovered controller word,
 persistent file, and display transaction & Canonical read-write metadata;
 development profile accepts 0--1023~ohm \\
 Set averaging / reads & Yes / read-write & Fixed RUN implementation; launch
-argument controls cadence, not the same averaging semantics & Read-only \\
+argument controls cadence, not the same averaging semantics & Fixed readback;
+write returns \code{BadNotSupported} \\
 Clear alarm latch & Yes / \code{ClearLatch} & No equivalent latch protocol in
-the legacy display/controller path & Not supported \\
+the legacy display/controller path & Method returns \code{BadNotSupported} \\
 Restart measurement engine & Yes / local allow-listed helper; not presently a
 canonical method & SysV \code{restart} & \code{BadNotSupported} \\
 Reboot controller & Linux capability / not a canonical method & Linux
@@ -612,7 +666,7 @@ maintenance/recovery actions until separately specified as canonical OPC~UA
 methods.  SC shall not infer those permissions from writable service-status
 nodes; service-status nodes are read-only.
 
-\subsection{Legacy GIZMo controlled expansion}\label{sec:legacy-control}
+\subsection{Legacy GIZMo conformance and controlled expansion}\label{sec:legacy-control}
 
 The ZedBoard OPC~UA server is a separate conforming implementation under
 development. A target-side ARMv7 development build was exercised on 13 August
@@ -856,10 +910,10 @@ defensible model.
 
 \section{Security and Access Control}
 
-Both endpoints belong on the restricted controls network or behind approved
-authenticated transport.  Final certificates, trust lists, usernames/roles,
-and firewall rules are installation data jointly assigned by SC and site
-cybersecurity.
+Every GIZMo endpoint belongs on the restricted controls network or behind
+approved authenticated transport.  Final certificates, trust lists,
+usernames/roles, and firewall rules are installation data jointly assigned by
+SC and site cybersecurity.
 
 GIZMo Kria currently supports an explicitly configured insecure OPC~UA policy
 for an isolated network; serialization is not encryption.  Production
@@ -941,6 +995,13 @@ Before SC sign-off, the parties shall:
   \item demonstrate that OPC~UA or Ignition-history failure does not stop local
   measurement or physical alarm indication.
 \end{itemize}
+
+The same versioned, machine-readable conformance checks shall be run against
+every GIZMo producer.  They shall compare the namespace URI, browse paths,
+NodeIds, node classes, datatypes, ranks, units/ranges, method signatures,
+access/capability restrictions, quality behavior, source timestamps, and
+instance identity against this ICD.  Passing those tests establishes interface
+conformance only; it does not establish metrology or authorize controls.
 
 \subsection{GIZMo Kria acceptance}
 
