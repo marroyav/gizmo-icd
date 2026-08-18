@@ -1,9 +1,9 @@
-# GIZMO Ground-Reference Impedance Monitoring
+# GIZMO Ground-Reference Monitoring Operations Guide
 
 This directory contains the publication-safe source and generated PDF for:
 
-> **GIZMO Ground-Reference Impedance Monitoring**<br>
-> *A human-facing connection, power-up, and construction-monitoring guide*<br>
+> **GIZMO Ground-Reference Monitoring Operations Guide**<br>
+> *Connection, commissioning, and monitoring during construction and operation*<br>
 > DUNE Far Detector<br>
 > Manuel Arroyave<br>
 > Prepared from the available DUNE DocDB, ORC, and legacy operating record
@@ -15,9 +15,11 @@ work procedure. Released grounding drawings, ORC, LOTO, hazard analysis,
 approved work controls, calibration, site configuration, and responsible
 sign-off take precedence.
 
-The guide is Kria-focused. The companion ICD defines the Kria OPC UA model as
-the GIZMo--Slow Controls contract and treats any ZedBoard server as an
-independent conforming implementation.
+The guide is Kria-focused. The generated GIZMO OPC UA schema is the machine
+contract, and the companion GIZMO--SC/DPS ICD explains it for human review. The
+preserved ZedBoard is the spare implementation, but it is not an accepted
+monitoring substitute until its calibration, authoritative alarm, security,
+and interface-acceptance gates pass.
 
 Build with:
 
