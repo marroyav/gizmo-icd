@@ -4,19 +4,19 @@
 body{font:16px/1.45 system-ui,sans-serif;color:#202a33;max-width:920px;margin:40px auto;padding:0 24px}h1,h2{color:#004c97;line-height:1.2}h1{font-size:30px}h2{font-size:21px;margin-top:28px}p,ul,ol{margin:10px 0}li{margin:5px 0}table{border-collapse:collapse;width:100%;font-size:14px;margin:14px 0}th,td{text-align:left;vertical-align:top;border-bottom:1px solid #cad1d8;padding:8px}th{background:#eef3f8}code{font-size:.9em;overflow-wrap:anywhere}.notice{border-left:4px solid #b3261e;padding:10px 16px;background:#fff3f2}.meta{color:#4f5b66;font-size:14px}a{color:#004c97}@media print{body{font:10pt/1.3 sans-serif;margin:0;padding:0;max-width:none}h1{font-size:20pt}h2{font-size:13pt;break-after:avoid}tr,.notice{break-inside:avoid}a{color:inherit}table{font-size:9pt}@page{size:letter;margin:.7in}}
 </style></head><body>
 <h1>GIZMO Ground-Reference Monitoring<br>Concise Operations Guide</h1>
-<p class="meta">DUNE Far Detector · Connection, commissioning, and monitoring<br>Condensed from the public review guide dated August 18, 2026. Integration and commissioning draft; technical and electrical-safety approval required before field use.</p>
+<p class="meta">DUNE Far Detector · Connection, commissioning, and monitoring<br>Commissioning draft; technical and electrical-safety approval required before field use.</p>
 <p class="notice"><strong>Never lift the safety ground.</strong> Follow the released grounding drawings, ORC, LOTO, hazard analysis, and controlled procedure. Only authorized electrical personnel may change fixed grounds, CTs, saturable-inductor assemblies, protection, or welding returns. SOP004 authorizes GIZMO installation and use. Follow its current approved revision and the applicable work plan.</p>
 
 <h2>1. Purpose and operating basis</h2>
 <p>Detector Ground comprises the cryostat and intentionally bonded detector structures. Cavern/Building Ground comprises bonded infrastructure. The approved saturable-inductor path connects them for electrical safety while limiting small AC noise currents.</p>
 <p>GIZMO injects a known AC stimulus between the references. A Pearson CT measures its return through the intended safety path. A parallel connection diverts current and changes the reported equivalent impedance or resistance. A low reading cannot locate the connection. An intentional bond also masks additional accidental shorts.</p>
-<p>The Kria-generated OPC UA model 1.4.0, namespace <code>urn:fnal:gizmo</code>, is the machine-interface authority. Other hardware must conform; the SC/DPS ICD explains the contract. Endpoints, trust, roles, configuration, and field commands remain site-controlled. Legacy <code>RUN</code>, <code>load_f</code>, <code>set_th</code>, and <code>./GIZMO.elf</code> are not Kria commands.</p>
+<p>The Kria-generated OPC UA model 1.4.0, namespace <code>urn:fnal:gizmo</code>, is the machine-interface authority. Other hardware must conform; the SC/DPS ICD explains the contract. Endpoints, trust, roles, configuration, and field commands remain site-controlled.</p>
 <p>Use the excitation frequency recorded in the deployed GIZMO configuration and its associated calibration. Verify the operating setting against the approved configuration; frequency changes require review and re-characterization.</p>
-<p>Released drawings determine topology and component placement. The 2018 requirements specify at least two saturable inductors near the isolation transformer, separated by more than six feet; the 2025 laboratory ORC shows one MS6984 and one Pearson 2100. Resolve the installed arrangement through the released drawing.</p>
+<p>The initial installation uses one saturable inductor. Verify its protection, CT routing, and connections against the released installation drawing.</p>
 
 <h2>2. Responsibilities and stop conditions</h2>
 <ul>
-<li><strong>Electrical lead:</strong> fixed grounds, CT, inductors/protection, rack bonds, approved fixture, and welding-return verification.</li>
+<li><strong>Electrical lead:</strong> fixed grounds, CT, inductor/protection, rack bonds, approved fixture, and welding-return verification.</li>
 <li><strong>GIZMO expert:</strong> chassis, image, analog chain, excitation, calibration, and alarm outputs.</li>
 <li><strong>SC/DPS expert:</strong> network, time, history, replication, archive/restore checks, display, external state records, and coverage alarms.</li>
 <li><strong>Activity coordinator:</strong> work-state declaration, planned-bond authorization and window, event records, and closeout.</li>
@@ -33,7 +33,7 @@ body{font:16px/1.45 system-ui,sans-serif;color:#202a33;max-width:920px;margin:40
 <li>With circuits safe and LOTO applied as required, inspect enclosures, connectors, strain relief, clearances, rack/chassis bonding, safety-path continuity, CT routing/security, unintended bridges, beacon visibility, and audible coverage.</li>
 <li>With the rack de-energized, have the electrical worker verify the safety assembly. Connect CT output to labeled CT input; stimulus center to the approved detector-side point; return to the approved rack/infrastructure point. Use the approved cable and routing.</li>
 <li>Connect beacon and audible outputs, assigned Kria Ethernet, and separate PDU management if required. Alarm-power connectors are not auxiliary supplies.</li>
-<li>Connect the approved NRTL-listed converter and PDU branch circuit/adapter; verify chassis rating and protective-earth continuity. The development-rack supply is 12 VDC, 5 A.</li>
+<li>Connect the approved NRTL-listed converter and PDU branch circuit/adapter; verify chassis rating and protective-earth continuity. Verify supply voltage and current rating against the installed chassis label.</li>
 <li>A second qualified person should check every connection against the drawing, read cable labels aloud, and record installer/verifier initials.</li>
 </ol>
 <p>CT bypass or make-before-break work requires a separate released electrical procedure. Moving stimulus routing or injection points requires characterization review.</p>
@@ -48,14 +48,14 @@ body{font:16px/1.45 system-ui,sans-serif;color:#202a33;max-width:920px;margin:40
 <li>Verify one-second fast snapshots, ten-second platform snapshots, advancing sequence numbers, monotonic timestamps, and no parse/quality flags.</li>
 <li>Compare the stable measurement/range with the commissioned baseline. Verify display, edge-store progress, and all replica cursors.</li>
 </ol>
-<p><strong>Routine monitoring requires:</strong> Good measurement and <code>Alarm.Active</code> status; commissioned normal range/baseline; correct threshold/calibration; acceptable data age; active local history; explicitly recorded external work state. Historic laboratory values and the legacy ten-second time criterion do not establish Kria acceptance.</p>
+<p><strong>Routine monitoring requires:</strong> Good measurement and <code>Alarm.Active</code> status; commissioned normal range/baseline; correct threshold/calibration; acceptable data age; active local history; explicitly recorded external work state.</p>
 
 <h2>5. Commission the installed loop</h2>
-<p>Use a current procedure explicitly authorizing the installed topology and resistive/capacitive fixture. Legacy characterization required detector-isolation-transformer loads off, primary LOTO, and controlled detector-ground connections before inserting a decade box.</p>
+<p>Use a current procedure explicitly authorizing the installed topology and resistive/capacitive fixture. Apply the power-down, LOTO, and connection controls specified by that procedure.</p>
 <ul>
 <li>Measure open/reference noise, known resistances through alarm conditions, representative capacitances, frequency response, and construction-equipment on/off effects.</li>
 <li>Select a frequency avoiding resonances/coherent noise, with monotonic short discrimination, stable I/Q, acceptable variance, and approved stimulus-current/touch/noise limits.</li>
-<li>Document threshold margins from normal noise and the maximum short resistance requiring detection. Do not adopt the legacy 100 Ω threshold or 5–6 Ω short reading without validation.</li>
+<li>Document threshold margins from normal noise and the maximum short resistance requiring detection.</li>
 <li>Record sweep, fit, waveform, frequency, amplitude, uncertainty, calibration file/hash, and approver. Frequency, amplitude, CT, routing, inductor, or major bonding changes require review and normally re-characterization.</li>
 <li>Test beacon, audible output, SC/DPS alarm, and logging end to end. A failed alarm test blocks release.</li>
 </ul>
@@ -101,7 +101,7 @@ body{font:16px/1.45 system-ui,sans-serif;color:#202a33;max-width:920px;margin:40
 <ol>
 <li>Log reason, UTC time, activity state, alarm, quality/range, threshold, configuration, and last healthy sample. Apply coverage rules before removing monitoring.</li>
 <li>Verify final history write and replica cursors; make any required consistent archive and record checksum/storage reference.</li>
-<li>Disable excitation with the approved Kria command and independently confirm stimulus-off; stop acquisition with the approved method. Both commands remain TBD in the source.</li>
+<li>Disable excitation with the approved Kria command and independently confirm stimulus-off; stop acquisition with the approved method. Approved commands: TBD.</li>
 <li>De-energize chassis/PDU only as authorized. Disconnect cables only after power-off and work release. Leave the permanent safety/inductor path in its approved state.</li>
 </ol>
 
@@ -111,9 +111,9 @@ body{font:16px/1.45 system-ui,sans-serif;color:#202a33;max-width:920px;margin:40
 <p>Do not select the spare for monitoring/DPS until calibration, alarm recovery, identity, non-interference, restart, network-loss, security, display comparison, and end-to-end acceptance are complete.</p>
 
 <h2>11. Complete before field release</h2>
-<p>Approve and record: rack/ORC; drawings and safety-assembly topology/IDs; CT orientation/transfer factor/cables; stimulus points; endpoint/trust/roles/network owner; OS/FPGA/runtime/configuration; exact startup/enable/disable/restart/recovery/rollback commands; boot/update/stale/recovery limits; excitation/tolerances; calibration/uncertainty; baseline/threshold/test fixture; SC/DPS fields/alarms; historian/replica/archive retention and restore acceptance; external states/inhibition; pre/post-work and coverage criteria; installed-work procedure; spare acceptance; rack-door revision; Daily Log location; shift and emergency contacts. Unresolved values remain TBD.</p>
+<p>Approve and record: rack/ORC; drawings and safety-assembly topology/IDs (one saturable inductor initially); CT orientation/transfer factor/cables; stimulus points; endpoint/trust/roles/network owner; OS/FPGA/runtime/configuration; exact startup/enable/disable/restart/recovery/rollback commands; boot/update/stale/recovery limits; excitation/tolerances; calibration/uncertainty; baseline/threshold/test fixture; SC/DPS fields/alarms; historian/replica/archive retention and restore acceptance; external states/inhibition; pre/post-work and coverage criteria; installed-work procedure; spare acceptance; rack-door revision; Daily Log location; shift and emergency contacts. Unresolved values remain TBD.</p>
 <p>Shift record: date/operator; equipment/ORC/configuration/calibration IDs; threshold/excitation; start/end alarm/reason/quality/range/baseline; age/history/replica/archive status; activity/work package/bond windows; contacts; events/interventions; archive/checksum/plots; open issues and handoff.</p>
 
-<h2>Source and precedence</h2>
-<p><a href="https://github.com/marroyav/gizmo-icd/blob/main/guides/ground-reference-monitoring/GIZMO_Ground_Reference_Impedance_Monitoring.tex">Full guide and source references</a>: DUNE DocDB 35392-v2, 1805-v12, 25365-v1, 27482-v2, and 285-v11; legacy engineering/readout reports; maintained Kria, ICD, archive, and Ignition repositories. Released drawings, the current Kria manual, installed characterization, and approved work controls take precedence over prototype or legacy values.</p>
+<h2>Operating references</h2>
+<p>Current SOP004 and work plan; released drawings and ORC; deployed configuration, manual, and calibration.</p>
 </body></html>

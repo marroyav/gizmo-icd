@@ -75,7 +75,7 @@
   \Large Connection, commissioning, and monitoring during construction and operation\\[1mm]
   \large DUNE Far Detector
 }
-\author{Manuel Arroyave\\[1mm]\small Prepared from the available DUNE DocDB, ORC, and legacy operating record}
+\author{Manuel Arroyave\\[1mm]\small Installation and operation of the deployed GIZMO}
 \date{Public review update of August 18, 2026}
 
 \begin{document}
@@ -88,8 +88,8 @@
 \toprule
 Document status & Commissioning draft; technical and electrical-safety approval required before field use. \\
 Primary audience & Activity coordinators, operators, SC/DPS developers, and authorized electrical personnel. \\
-Current hardware basis & Kria-based \GIZMO{} rack described by DUNE-doc-35392-v2; its implementation defines the authoritative \texttt{urn:fnal:gizmo} OPC~UA contract. \\
-Spare basis & Preserved ZedBoard/Zynq \GIZMO{} and DUNE-doc-1805-v12, 25365-v1, and 27482-v2. \\
+Current hardware basis & Deployed Kria-based \GIZMO{} rack; its implementation defines the authoritative \texttt{urn:fnal:gizmo} OPC~UA contract. \\
+Spare basis & ZedBoard/Zynq \GIZMO{}; readiness limits are listed in Section~\ref{sec:zed-spare}. \\
 Machine contract & The Kria implementation generates the authoritative, hardware-neutral \texttt{urn:fnal:gizmo} OPC~UA model; the companion GIZMO--SC/DPS ICD explains it for human review. Any other \GIZMO{} implementation shall conform to the generated contract. Current released model baseline: 1.4.0. \\
 Controlled procedure & Procore: FDC $>$ Administrative $>$ Work Planning and Controls $>$ SOP004 GIZMO. SOP004 authorizes the installation and use of \GIZMO{}. Follow its current approved revision and the applicable work plan. \\
 \bottomrule
@@ -121,7 +121,7 @@ The Far Detector needs two electrical reference systems that serve different pur
 Quantity & Nominal or implemented value & Meaning \\
 \midrule
 Excitation frequency & Deployed configuration & Frequency of the injected \emph{sine wave}; verify against the deployed configuration and calibration. \\
-ADC/DAC rate & Approximately $1\,\mathrm{MS/s}$ & Internal waveform generation and digitization rate in the ZedBoard design. \\
+ADC/DAC rate & Deployed configuration & Internal waveform generation and digitization rate. \\
 Kria fast-history cadence & $1\,\mathrm{Hz}$ & Implemented cadence for measurement, alarm, lock-in, thermal, uptime, and sequence snapshots. \\
 Kria platform cadence & $0.1\,\mathrm{Hz}$ & Implemented cadence for chartable operating-system, storage, process, filesystem, and network counters. \\
 \bottomrule
@@ -179,7 +179,7 @@ Figure~\ref{fig:concept} is intentionally conceptual. It explains the measuremen
 \label{fig:concept}
 \end{figure}
 
-The 2018 Far Site grounding requirements state that the Detector Ground is to remain isolated from other grounding systems except through saturable inductors, require ground-monitoring instrumentation, and call for at least two saturable inductors near the detector isolation transformer with separation greater than six feet. The 2025 Kria ORC package documents a \emph{laboratory} rack containing one MS6984 saturable inductor and one Pearson 2100 CT. The released installation drawing must resolve the final Far Detector quantity and topology; the laboratory ORC drawing must not be copied blindly underground.
+The initial installation uses one saturable inductor. Verify its protection, CT routing, and connection between Detector Ground and Cavern/Building Ground against the released installation drawing.
 
 \section{Roles and stop-work boundaries}
 
@@ -187,7 +187,7 @@ The 2018 Far Site grounding requirements state that the Detector Ground is to re
 \toprule
 Role & Permitted work in this guide \\
 \midrule
-Authorized electrical worker & Installs and verifies fixed grounding conductors, CT, saturable inductors, protection devices, rack bonds, and approved test fixture under the controlled electrical procedure. \\
+Authorized electrical worker & Installs and verifies fixed grounding conductors, CT, the saturable inductor, protection devices, rack bonds, and approved test fixture under the controlled electrical procedure. \\
 \GIZMO{} hardware expert & Verifies chassis, Kria image, analog chain, stimulus amplitude/frequency, calibration, and alarm outputs. \\
 SC/DPS expert & Configures network, timestamps, one-second fast history, bounded edge retention, off-board replication, archive verification, dashboard, external state records, and stale-data alarm. \\
 Activity coordinator & Declares normal/planned-bond/test states, controls the intentional-bond window, records the affected activity, and confirms closeout. \\
@@ -214,7 +214,7 @@ Complete this section at initial installation and whenever the rack, grounding t
 \begin{enumerate}
   \item \checkbox\ Confirm the current approved revision of SOP004 GIZMO, which authorizes installation and use, and the activity-specific hazard analysis.
   \item \checkbox\ Confirm the released Far Detector grounding single-line, cable schedule, CT orientation, saturable-inductor/MOV assembly drawing, and welding plan.
-  \item \checkbox\ Confirm the Kria rack ORC is released for the installed location and configuration. DUNE-doc-35392 documents the G271 development rack, not automatically the underground installation.
+  \item \checkbox\ Confirm the Kria rack ORC is released for the installed location and configuration.
   \item \checkbox\ Record the equipment IDs: rack, Kria chassis, PDU, CT, saturable-inductor assembly components, AC/DC converter, calibration, software, FPGA image, and configuration hash.
   \item \checkbox\ Verify that the rack label includes the rack equipment ID and applicable ORC number.
   \item \checkbox\ Name the electrical work lead, \GIZMO{} expert, SC/DPS contact, activity coordinator, and escalation contact for the shift.
@@ -233,7 +233,7 @@ An authorized electrical worker shall identify and label:
   \item the rack/chassis bonding point used by the stimulus return.
 \end{itemize}
 
-\warning{Do not infer ``detector side'' from wire color, physical direction, or an old photograph. If the released installation adopts the site convention, Cavern Ground is green and Detector Ground is green with a yellow stripe; both colors remain visual aids only. Verify the released drawing and durable text labels. The ZedBoard reference documents use transformer-secondary and busbar names that may not match the installed Kria labels.}
+\warning{Do not infer ``detector side'' from wire color, physical direction, or a photograph. If the released installation adopts the site convention, Cavern Ground is green and Detector Ground is green with a yellow stripe; both colors remain visual aids only. Verify the released drawing and durable text labels.}
 
 \subsection{Rack-door reference}
 
@@ -281,12 +281,12 @@ This sequence describes the signal and rack interfaces. Fixed grounding work rem
 
   \item \textbf{Network.} Connect the Kria \GIZMO{} Ethernet port to the assigned detector controls network switch port. Connect the Raritan PDU management port separately if required by the rack drawing.
 
-  \item \textbf{DC power.} Connect the approved NRTL-listed AC/DC converter to the Kria chassis. DUNE-doc-35392 identifies a $12\,\mathrm{VDC}$, $5\,\mathrm{A}$ converter for the development rack. Verify the installed chassis label before connection.
+  \item \textbf{DC power.} Connect the approved NRTL-listed AC/DC converter to the Kria chassis. Verify supply voltage and current rating against the installed chassis label before connection.
 
   \item \textbf{PDU input.} Connect the Raritan PDU only to the approved branch circuit and adapter specified by the installed rack ORC. Check protective-earth continuity before energizing.
 \end{enumerate}
 
-\danger{Never perform make-before-break or bypass work on the CT/safety-ground conductor from this guide. The old setup package references a separate CT bypass procedure. That operation requires its own released procedure, tools, hazard controls, and authorized electrical worker.}
+\danger{Never perform make-before-break or bypass work on the CT/safety-ground conductor from this guide. That operation requires its own released procedure, tools, hazard controls, and authorized electrical worker.}
 
 \subsection{Independent connection verification}
 
@@ -329,12 +329,12 @@ current GIZMO OPC~UA contract does not publish a work-state selector.
   \item Energize the rack PDU from the approved branch circuit. Verify normal PDU status and protective-earth indication.
   \item Energize the Kria \GIZMO{} $12\,\mathrm{VDC}$ supply. Check for normal front-panel power indicators, abnormal sound, odor, heat, or smoke. De-energize immediately if any abnormal condition appears.
   \item Wait for the approved Kria boot interval. Confirm \texttt{gizmo.target} and the required component services are healthy through the approved operational workflow; record the installed runtime and model versions.
-  \item Verify OPC~UA reachability from the assigned SC/DPS host, resolve \texttt{urn:fnal:gizmo} at connection time, and validate device identity. Use the registered hostname, address, certificate, and trust policy from site configuration; do not use historic ZedBoard connection data from old documents.
-  \item Verify the system clock and data timestamp are UTC and advancing. The legacy display required the measurement time to remain within 10 seconds of the system time; the Kria acceptance criterion is \TBD.
+  \item Verify OPC~UA reachability from the assigned SC/DPS host, resolve \texttt{urn:fnal:gizmo} at connection time, and validate device identity. Use the registered hostname, address, certificate, and trust policy from site configuration.
+  \item Verify the system clock and data timestamp are UTC and advancing. Verify data age against the approved deployed-system limit; the acceptance criterion is \TBD.
   \item Start the approved acquisition target and confirm the configured excitation waveform, frequency, amplitude limit, and calibration ID before enabling stimulus. Public service names and commands are documented in the maintained Kria runtime; their use still requires the site-approved procedure.
-  \item With authorization from the electrical lead, enable the configured stimulus only after its waveform, frequency, and amplitude have been approved for the installed topology. Record the actual settings; do not substitute a legacy nominal value.
+  \item With authorization from the electrical lead, enable the configured stimulus only after its waveform, frequency, and amplitude have been approved for the installed topology. Record the actual deployed settings.
   \item Confirm the local historian records one fast snapshot per second, sequence numbers advance, timestamps are monotonic, platform snapshots arrive every ten seconds, and no parse/quality flags are set.
-  \item Confirm a plausible stable reading against the most recent commissioned baseline. Do not use a ProtoDUNE, LArTF, MINOS, or laboratory resistance value as the Far Detector baseline.
+  \item Confirm a plausible stable reading against the most recent commissioned baseline. Use the baseline accepted for the deployed installation.
   \item Verify the dashboard shows measurement quality, \texttt{ResistanceRange}, resistance or \texttt{HIGH Z}, threshold, data age, hardware state, \texttt{Alarm.Active}, and \texttt{Alarm.Reason}. If an external work state is displayed, verify its source and timestamp. Confirm the SQLite edge store is advancing and every configured replica cursor is healthy.
 \end{enumerate}
 
@@ -351,16 +351,15 @@ endpoints, credentials, certificate material, target images, calibration
 state, network configuration, or authorization policy. The controlled
 revision of this guide must identify the approved runtime/configuration,
 endpoint, trust and role policy, exact field commands, rollback, and recovery
-steps. Legacy commands such as \texttt{./GIZMO.elf}, \texttt{RUN},
-\texttt{load\_f}, and \texttt{set\_th} are not Kria commands.
+steps.
 
 \section{Commissioning and baseline}
 
-Commissioning establishes what ``normal'' means for the actual cryostat, grounding conductors, saturable inductors, CT, stimulus cable, and installed firmware. A threshold without a site-specific characterization is not defensible.
+Commissioning establishes what ``normal'' means for the actual cryostat, grounding conductors, the saturable inductor, CT, stimulus cable, and installed firmware. A threshold without a site-specific characterization is not defensible.
 
 \subsection{Characterization prerequisites}
 
-The legacy characterization procedure requires equipment powered from the detector isolation transformer to be powered down, the transformer primary locked out/tagged out, and detector-ground connections controlled before a decade box is inserted. Perform characterization only under a current approved procedure that explicitly authorizes the installed configuration and test fixture. Do not reproduce the legacy test casually during construction or operation.
+Perform characterization under the current approved procedure for the installed configuration and test fixture. Apply the power-down, LOTO, and connection controls specified by that procedure.
 
 Use only an approved resistive/capacitive test fixture. The test plan should obtain:
 
@@ -389,7 +388,7 @@ Record the sweep, fit, chosen frequency, waveform, amplitude, uncertainty, calib
 
 \subsection{Threshold selection}
 
-The threshold is a site-specific engineering decision. The approved value must document both its nuisance-alarm margin from the normal distribution and its detection margin for the maximum short resistance that must be found. Do not copy the legacy $100\,\Omega$ example or historic $5$--$6\,\Omega$ direct-short reading into the Far Detector configuration without validation.
+The threshold is a site-specific engineering decision. The approved value must document both its nuisance-alarm margin from the normal distribution and its detection margin for the maximum short resistance that must be found.
 
 \section{Routine live monitoring}
 
@@ -617,7 +616,7 @@ Controlled item & Approved value / reference \\
 \endhead
 Underground rack ID and released ORC & \TBD \\
 Far Detector grounding single-line and cable schedule & \TBD \\
-Saturable-inductor quantity, IDs, protection, and placement & \TBD \\
+Saturable-inductor quantity, ID, protection, and placement & One initially; ID, protection, and placement: \TBD \\
 Pearson CT ID, orientation, cable ID, and transfer factor & \TBD \\
 Detector-side stimulus connection point & \TBD \\
 Cavern/Building Ground stimulus return point & \TBD \\
@@ -668,29 +667,9 @@ Open issues and handoff & \\
 \section{Source documents}
 
 \begin{enumerate}
-  \item DUNE-doc-35392-v2, \emph{ORC Documents for DUNE Impedance Monitor Rack in FNAL HEERC G271}. Current Kria rack hardware basis; laboratory/development configuration.\\
-  \url{https://docs.dunescience.org/cgi-bin/private/ShowDocument?docid=35392}
-
-  \item DUNE-doc-1805-v12, \emph{GIZMO: Ground Current Impedance MOnitor}. Legacy engineering note, operations, setup instructions, diagrams, and schematics.\\
-  \url{https://docs.dunescience.org/cgi-bin/private/ShowDocument?docid=1805}
-
-  \item DUNE-doc-25365-v1, \emph{LArTF Impedance Monitor System for 2x2}. 2022 engineering note, characterization, and operating tips.\\
-  \url{https://docs.dunescience.org/cgi-bin/private/ShowDocument?docid=25365}
-
-  \item DUNE-doc-27482-v2, \emph{MINOS Impedance Monitor System}. Legacy SD-card, chassis, calibration, PMOD, and testing material.\\
-  \url{https://docs.dunescience.org/cgi-bin/private/ShowDocument?docid=27482}
-
-  \item DUNE-doc-285-v11, \emph{DUNE Grounding Plan}; file \emph{LBNF/DUNE Far Site Detector Grounding System Requirements}, April 8, 2018.\\
-  \url{https://docs.dunescience.org/cgi-bin/private/ShowDocument?docid=285}
-
-  \item D. Subedi, \emph{Ground Impedance Monitor Technical Report}, 2021. ZedBoard architecture.\\
-  \url{https://dsubedi.info/data/I1/FNAL_2021_GIZMo_paper.pdf}
-
-  \item V. Cerrone, \emph{DUNE ND-LAr 2x2 Demonstrator Tests}, 2022. Legacy SSH, InfluxDB, and Grafana readout implementation.\\
-  \href{https://indico.fnal.gov/event/56266/contributions/251018/attachments/160238/211768/Cerrone_report.pdf}{Fermilab Indico report attachment}
-
-  \item Public legacy client source, \texttt{gizmo\_control}.\\
-  \url{https://github.com/vanessacerrone/gizmo_control}
+  \item Current approved SOP004 GIZMO and activity-specific work plan.
+  \item Released installation grounding drawing, cable schedule, and rack ORC.
+  \item Deployed GIZMO configuration, software manual, and accepted calibration record.
 
   \item Public GIZMO Kria runtime, generated OPC~UA contract, reference
   implementation, historian, dashboard, and ZedBoard-spare status. The
@@ -708,7 +687,7 @@ Open issues and handoff & \\
   \url{https://github.com/marroyav/gizmo-ignition}
 \end{enumerate}
 
-\warning{Several source documents describe prototypes or installations other than the DUNE Far Detector. Their values are clearly labeled as legacy or proposed in this guide. The current released drawings, Kria software manual, site characterization, and approved work controls take precedence.}
+\warning{Use the current released drawings, deployed Kria configuration and manual, accepted site characterization, and approved work controls.}
 
 \vfill
 \begin{center}
