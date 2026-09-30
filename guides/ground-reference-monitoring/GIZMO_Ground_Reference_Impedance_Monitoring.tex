@@ -6,6 +6,10 @@
 \hypersetup{colorlinks=true,urlcolor=blue}
 \setlist{leftmargin=*,itemsep=2pt,topsep=3pt}
 \setlength{\emergencystretch}{3em}
+\setlength{\parskip}{4pt}
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}{1.2ex plus .2ex}{.6ex}{\normalfont\large\bfseries}}
+\makeatother
 \begin{document}
 \raggedright
 \begin{center}\Large\bfseries GIZMO Operations Guide\end{center}
@@ -40,19 +44,32 @@ With the rack de-energized, check each cable against its installed label and the
 \end{itemize}
 Changes to grounding, CT routing, stimulus, or calibration require the applicable work controls. Do not improvise a bypass or move connections to clear an alarm.
 
+\section*{Contractor grounding and isolation tests}
+The contractor will work with the cryostat and beam structure connected to Building Ground. GIZMO will check for shorts, capacitance, and coupling between Detector Ground and Building Ground during periodic isolation tests.
+
+The planned arrangement uses a knife switch with tagout to establish the isolation-test state. The switching procedure must identify the switch, test position, protection, and responsible person. Do not treat an intentional construction bond as an isolation measurement.
+
+\begin{enumerate}
+\item Contractor work: verify and record the Building Ground connection while personnel are working on the structure.
+\item Isolation test: coordinate a work pause, use the authorized knife-switch/tagout procedure, and record the actual grounding state and test time.
+\item With fresh, usable GIZMO data, record the isolation indication, capacitance where valid, and coupling diagnostics. Compare with the permitted isolation limits.
+\item Before contractor work resumes, restore and verify the required Building Ground connection, complete tagout closeout, and record the handback.
+\end{enumerate}
+Schedule tests often enough to detect unwanted connections before further construction makes correction disruptive. Test cadence, shift routine, settling time, acceptance limits, and response to a failed or missed test: TBD. The recorded 100 \ensuremath{\Omega} alarm threshold is not an approved construction-isolation acceptance limit.
+
 \section*{Start of shift}
 \begin{enumerate}
-\item Open the GIZMO dashboard. Check the sample time and connection status before reading the alarm or impedance.
-\item Confirm that the displayed frequency and threshold match the recorded settings. Report any unexplained change.
-\item Check alarm, measurement quality, and recent history. A clear alarm is usable only with Good status and a fresh sample.
-\item Record the check and any active welding or temporary bond in Procore Daily Log \textgreater{} GIZMO. Hand over unresolved alarms and outages.
+\item Acknowledge the grounding state at shift start: contractor work with Building Ground connected, isolation test under tagout, or unresolved. Confirm the physical connection, knife-switch position, tagout status, and handover with the responsible lead.
+\item Review the last isolation test, unresolved findings, and the next test due under the work plan.
+\item Check the dashboard sample time, connection, quality, alarm, and recorded settings. Old data or a clear alarm alone cannot confirm isolation.
+\item Record the acknowledgement and work state in Procore Daily Log \textgreater{} GIZMO. Detailed shift routine: TBD.
 \end{enumerate}
-HIGH Z is a range indication, not a resistance value. Do not replace it with a number. The last stored sample had Uncertain quality, an uncertain clear alarm, and a latched alarm; it does not establish the present ground condition.
+HIGH Z is a range indication, not a resistance value. The last stored sample had Uncertain quality, an uncertain clear alarm, and a latched alarm; it does not establish the present ground condition.
 
 \section*{If an alarm appears}
 \begin{enumerate}
-\item Check whether an authorized temporary bond is active.
-\item If the alarm is unexpected, stop new ground-affecting work. Record the time and alarm reason; notify the activity coordinator and grounding/GIZMO contact.
+\item Check the recorded grounding state and any intentional construction or welding bond. An isolation result is not meaningful while the required Building Ground connection is in place.
+\item If the alarm is unexpected for the recorded grounding state, stop new ground-affecting work. Record the time and alarm reason; notify the activity coordinator and grounding/GIZMO contact.
 \item Check what changed: welding returns, temporary leads, cable shields, piping, scaffolding, or tools. Investigate under the work plan.
 \item Keep the data and record the disposition. Do not change the threshold to make the alarm disappear.
 \end{enumerate}
@@ -61,17 +78,13 @@ Treat stale or non-Good data as unavailable monitoring. A running dashboard or a
 
 \begin{enumerate}
 \item Record the last sample time and notify the GIZMO and SC/DPS contacts.
-\item Pause ground-affecting work unless the work plan permits an approved alternate monitor. Unrelated work need not stop solely because the data is stale.
+\item During an isolation test, do not accept a result without valid data or an approved alternative. During contractor work, verify the required Building Ground connection; continuation and rescheduling follow the work plan.
 \item Check the instrument power and network through the responsible on-site contact. The server reports loss of reachability; the cause has not been established.
 \item After connection returns, verify advancing timestamps, usable measurement/alarm quality, and resumed history before relying on GIZMO again.
 \end{enumerate}
-\section*{Welding or a planned bond}
-\begin{enumerate}
-\item Before work, confirm the work package and return/bond arrangement. Record the starting condition and actual bond time.
-\item Keep acquisition running. A planned bond can produce an alarm and mask an additional accidental short.
-\item Inhibit annunciation only through the approved method; retain raw alarms and record the inhibition.
-\item After work, remove temporary leads/bonds as specified, record the removal time, and confirm the normal condition returns. Close the window only after the responsible leads accept the result.
-\end{enumerate}
+\section*{Welding}
+Use the approved welding-return arrangement. Record additional bonds and any approved alarm inhibition; keep raw alarms and history. Restore the contractor grounding state after work and check isolation at the scheduled test.
+
 \section*{Server check}
 On dune-fd-test01, run:
 
