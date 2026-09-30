@@ -8,6 +8,12 @@ System (SC/DPS).
 
 [Open the separate ground-reference monitoring operations guide](guides/ground-reference-monitoring/GIZMO_Ground_Reference_Impedance_Monitoring.pdf)
 
+[Open the concise operations guide](guides/ground-reference-monitoring/GIZMO_Ground_Reference_Impedance_Monitoring_Concise.pdf)
+
+The concise edition consolidates the operating checks, safety boundaries, alarm
+responses, and site-controlled acceptance items. Its LaTeX source and printable
+HTML are included alongside the full guide.
+
 ## Interface summary
 
 The ICD defines one hardware-neutral SC/DPS interface:

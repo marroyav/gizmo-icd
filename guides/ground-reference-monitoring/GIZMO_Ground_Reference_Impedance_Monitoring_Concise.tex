@@ -1,0 +1,298 @@
+\documentclass[10pt]{article}
+\usepackage[letterpaper,margin=0.7in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern,parskip,longtable,array,hyperref}
+\hypersetup{colorlinks=true,urlcolor=blue,pdftitle={GIZMO Operations Guide - Concise Edition}}
+\setlength{\emergencystretch}{3em}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\begin{document}
+\raggedright
+
+\section*{GIZMO Ground-Reference Monitoring\\
+Concise Operations Guide}
+
+
+
+DUNE Far Detector \textperiodcentered{} Connection, commissioning, and monitoring\\
+Condensed from the public review guide dated August 18, 2026. Integration and commissioning draft; technical and electrical-safety approval required before field use.
+
+
+
+\textbf{Never lift the safety ground.} Follow the released grounding drawings, ORC, LOTO, hazard analysis, and controlled procedure. Only authorized electrical personnel may change fixed grounds, CTs, saturable-inductor assemblies, protection, or welding returns. SOP004 Rev. 0, effective July 15, 2026, covers portable setup and periodic checks; it does not authorize installed-Kria commissioning, characterization, planned-short monitoring, or alarm response.
+
+
+\section*{1. Purpose and operating basis}
+
+
+
+Detector Ground comprises the cryostat and intentionally bonded detector structures. Cavern/Building Ground comprises bonded infrastructure. The approved saturable-inductor path connects them for electrical safety while limiting small AC noise currents.
+
+
+
+GIZMO injects a known AC stimulus between the references. A Pearson CT measures its return through the intended safety path. A parallel connection diverts current and changes the reported equivalent impedance or resistance. A low reading cannot locate the connection. An intentional bond also masks additional accidental shorts.
+
+
+
+The Kria-generated OPC UA model 1.4.0, namespace \texttt{urn:fnal:gizmo}, is the machine-interface authority. Other hardware must conform; the SC/DPS ICD explains the contract. Endpoints, trust, roles, configuration, and field commands remain site-controlled. Legacy \texttt{RUN}, \texttt{load\_f}, \texttt{set\_th}, and \texttt{./GIZMO.elf} are not Kria commands.
+
+
+
+The legacy excitation is a 1.4 kHz sine wave, with approximately 1 MS/s internal ADC/DAC operation. The maintained Kria default is 1436 Hz. The proposed 3 kHz Far Detector study value is not a commissioned setting. Select and approve the installed frequency by in-situ sweep and calibration.
+
+
+
+Released drawings determine topology and component placement. The 2018 requirements specify at least two saturable inductors near the isolation transformer, separated by more than six feet; the 2025 laboratory ORC shows one MS6984 and one Pearson 2100. Resolve the installed arrangement through the released drawing.
+
+
+\section*{2. Responsibilities and stop conditions}
+
+
+\begin{itemize}
+
+\item \textbf{Electrical lead:} fixed grounds, CT, inductors/protection, rack bonds, approved fixture, and welding-return verification.
+
+\item \textbf{GIZMO expert:} chassis, image, analog chain, excitation, calibration, and alarm outputs.
+
+\item \textbf{SC/DPS expert:} network, time, history, replication, archive/restore checks, display, external state records, and coverage alarms.
+
+\item \textbf{Activity coordinator:} work-state declaration, planned-bond authorization and window, event records, and closeout.
+
+\item \textbf{Operator:} released checklist, live checks, event recording, and stop/escalation.
+
+\end{itemize}
+
+
+
+Stop before energizing or injecting if conductors are unidentified, the CT is bypassed, protection differs from the drawing, the rack safety bond is missing, image/configuration is unknown, or no responsible electrical/grounding contact is available.
+
+
+
+Ground-affecting activity includes changes to bonds, welding returns, cable shields, pipes, scaffolding, test jumpers, grounding, or monitoring conductors. Pause/restart decisions follow activity and coverage, without a quota of stops per shift.
+
+
+\section*{3. Prepare and connect}
+
+
+
+Repeat these checks after changes to the rack, topology, CT, inductor, firmware, or cryostat connection.
+
+
+\begin{enumerate}
+
+\item Confirm procedure scope, hazard analysis, released single-line/cable schedule, CT orientation, protection drawing, welding plan, and ORC for the installed location. Record equipment, software/FPGA, configuration hash, and calibration IDs; identify shift contacts.
+
+\item Label both ground references, the CT conductor, both sides of the inductor assembly, stimulus injection point, and return/chassis bond. Verify drawings and text labels; color and photographs are insufficient.
+
+\item With circuits safe and LOTO applied as required, inspect enclosures, connectors, strain relief, clearances, rack/chassis bonding, safety-path continuity, CT routing/security, unintended bridges, beacon visibility, and audible coverage.
+
+\item With the rack de-energized, have the electrical worker verify the safety assembly. Connect CT output to labeled CT input; stimulus center to the approved detector-side point; return to the approved rack/infrastructure point. Use the approved cable and routing.
+
+\item Connect beacon and audible outputs, assigned Kria Ethernet, and separate PDU management if required. Alarm-power connectors are not auxiliary supplies.
+
+\item Connect the approved NRTL-listed converter and PDU branch circuit/adapter; verify chassis rating and protective-earth continuity. The development-rack supply is 12 VDC, 5 A.
+
+\item A second qualified person should check every connection against the drawing, read cable labels aloud, and record installer/verifier initials.
+
+\end{enumerate}
+
+
+
+CT bypass or make-before-break work requires a separate released electrical procedure. Moving stimulus routing or injection points requires characterization review.
+
+
+
+Post a revision-controlled rack-door reference: rack/device and ORC IDs, ground references, normal indications, alarm/quality/data-age interpretation, HIGH Z meaning, contacts, Daily Log location, procedure link, and ``Never lift the safety ground.''
+
+
+\section*{4. Power up and accept}
+
+
+\begin{enumerate}
+
+\item Record external state as COMMISSIONING or NORMAL; confirm no undeclared welding, signed connections, storage headroom, logging/archive plan, provisioned replicas, and approved software/FPGA/configuration IDs. Keep excitation disabled until authorized.
+
+\item Energize the PDU, then Kria supply. Check indicators and protective earth. De-energize immediately for abnormal sound, odor, heat, or smoke.
+
+\item After the approved boot interval, verify \texttt{gizmo.target} and required services; record runtime/model versions. From the assigned SC/DPS host, verify endpoint, device identity, trust, and namespace resolution by URI.
+
+\item Verify advancing UTC timestamps against the approved age limit. Start acquisition through the approved workflow; confirm waveform, frequency, amplitude limit, and calibration before the electrical lead authorizes stimulus.
+
+\item Verify one-second fast snapshots, ten-second platform snapshots, advancing sequence numbers, monotonic timestamps, and no parse/quality flags.
+
+\item Compare the stable measurement/range with the commissioned baseline. Verify display, edge-store progress, and all replica cursors.
+
+\end{enumerate}
+
+
+
+\textbf{Routine monitoring requires:} Good measurement and \texttt{Alarm.Active} status; commissioned normal range/baseline; correct threshold/calibration; acceptable data age; active local history; explicitly recorded external work state. Historic laboratory values and the legacy ten-second time criterion do not establish Kria acceptance.
+
+
+\section*{5. Commission the installed loop}
+
+
+
+Use a current procedure explicitly authorizing the installed topology and resistive/capacitive fixture. Legacy characterization required detector-isolation-transformer loads off, primary LOTO, and controlled detector-ground connections before inserting a decade box; SOP004 Rev. 0 does not authorize this installed-Kria test.
+
+
+\begin{itemize}
+
+\item Measure open/reference noise, known resistances through alarm conditions, representative capacitances, frequency response, and construction-equipment on/off effects.
+
+\item Select a frequency avoiding resonances/coherent noise, with monotonic short discrimination, stable I/Q, acceptable variance, and approved stimulus-current/touch/noise limits.
+
+\item Document threshold margins from normal noise and the maximum short resistance requiring detection. Do not adopt the legacy 100 \ensuremath{\Omega} threshold or 5--6 \ensuremath{\Omega} short reading without validation.
+
+\item Record sweep, fit, waveform, frequency, amplitude, uncertainty, calibration file/hash, and approver. Frequency, amplitude, CT, routing, inductor, or major bonding changes require review and normally re-characterization.
+
+\item Test beacon, audible output, SC/DPS alarm, and logging end to end. A failed alarm test blocks release.
+
+\end{itemize}
+
+
+\section*{6. Shift monitoring and records}
+
+
+
+At shift start, verify external activity state/source/time, current UTC data, Good alarm/measurement status, normal range/baseline, approved excitation/configuration/calibration/threshold, and historian/free-space/replica/archive health. Review the preceding 12 hours for steps, drift, gaps, or unclosed bond windows. Record start/end checks in Procore Daily Log > GIZMO.
+
+
+
+The display should show range/resistance or HIGH Z, threshold, \ensuremath{\geq}12-hour trend, I/Q/magnitude, source time/age/StatusCode, alarm/reason/latch/acknowledgements, configuration IDs, external activity/permit window, and system/logging health.
+
+
+
+Activity state, permit/window, alarm inhibition, stimulus-enabled state, amplitude, and waveform are not supplied by the current OPC UA contract. Label their defined external sources.
+
+
+\begin{longtable}{@{}L{0.59\linewidth}L{0.16\linewidth}L{0.19\linewidth}@{}}
+Kria record & Cadence & Local retention\\\hline
+
+Fast measurement, alarm, lock-in, thermal, uptime, and sequence snapshot & 1 second & 14 days\\\hline
+
+Platform, OS, storage, process, filesystem, and network snapshot & 10 seconds & 30 days\\\hline
+
+Rollup: first, last, min, max, mean, count, and worst status & 1 minute & 365 days\\\hline
+
+Alarm, quality, clock, boot, network, service, and history transition & On change & 1825 days\\\hline
+
+\end{longtable}
+
+
+
+SQLite schema 2 retains scalar value, StatusCode, source time, receive time, and fast-data sequence/epoch; raw ADC/SDR frames are excluded. Planning estimates: 1.48 GB/month continuous capture; bounded policy approximately 1.26 GB in replay.
+
+
+
+Create immutable archives using SQLite online backup or checkpointed export; do not copy an actively written WAL database. Record checksum, schema/runtime versions, model digest, and capture-path digest. Cursor replication transfers inserts and updated rollups, never deletions. Off-board replicas and PostgreSQL/Ignition history have independent retention, backup, and restore acceptance; permanent replicas may disable age pruning while retaining free-space guards.
+
+
+
+Daily Log entries contain 6-, 12-, or 24-hour plots/statistics; shift checks; work-package/bond events; alarms, acknowledgements, investigation/disposition; and archive/checksum/configuration/calibration links. Procore is not the raw-data store.
+
+
+\section*{7. Welding and planned bonds}
+
+
+\begin{enumerate}
+
+\item \textbf{Before:} coordinator authorizes work package, location, lead, bond arrangement, and window; electrical lead verifies returns/bonds. Require Good measurement, Good clear alarm, and normal baseline for the approved pre-work interval. Log WELDING\_PREP with UTC time and expected duration; verify continuous one-second capture.
+
+\item \textbf{During:} log WELDING\_ACTIVE at actual bond time. Verify the expected transition; stop for expert review if absent. Keep quality, age, health, and history visible; log subsequent changes. Impedance cannot establish isolation while bonded.
+
+\item \textbf{If inhibited:} use only approved SC/DPS annunciation management; retain raw alarm/status/time and an external ALARM\_INHIBITED record. Do not disconnect CT, stimulus, safety path, or monitor to silence an alarm.
+
+\item \textbf{After:} work lead confirms stop and temporary leads/bonds removed or in specified final state. Log WELDING\_BOND\_REMOVED at removal. Require normal alarm/quality/range/baseline within the approved recovery window and stable post-work interval.
+
+\item \textbf{Close:} if recovery fails, control the area and inspect recent work under the approved fault plan. Log WELDING\_CLOSED only after electrical-lead/coordinator acceptance; attach before/after plots.
+
+\end{enumerate}
+
+
+
+These event names are human-log labels, not OPC UA nodes. Approved procedures define timing and vocabulary. Unknown state, expired window, or mismatched bonds require treatment as a possible fault.
+
+
+\section*{8. Alarm and coverage response}
+
+
+\begin{longtable}{@{}L{0.30\linewidth}L{0.66\linewidth}@{}}
+Observation & Required response\\\hline
+
+Good active alarm in NORMAL & Stop new ground-affecting activity; record UTC time/reason; notify coordinator and grounding/GIZMO expert; preserve data and investigate recent changes.\\\hline
+
+Good active alarm during approved bond window & Verify work package, location, bonds, and window; continue quality/age/history checks. Treat discrepancies as unexpected faults.\\\hline
+
+Good OutOfRange / HIGH Z, alarm clear & Record HIGH Z and compare with commissioned normal state. It is a valid range state; do not substitute a numeric value.\\\hline
+
+Step with alarm clear & Record correlated activity, compare I/Q/magnitude, and seek grounding review. SC/DPS must not recreate device threshold logic.\\\hline
+
+Stale data, missing samples, gaps, or non-good alarm status & Raise a separate coverage alarm; retain last value/status; recover logging without erasing the file. Apply the activity rules below.\\\hline
+
+Invalid range, implausible value, clipping, I/Q discontinuity, or frequency mismatch & Mark measurement invalid; check configuration/hardware and escalate to GIZMO expert. It does not establish good isolation.\\\hline
+
+No alarm during authorized test & Withhold release; verify fixture, threshold, beacon, audible output, SC/DPS, and CT/stimulus path.\\\hline
+
+\end{longtable}
+
+
+
+\textbf{Coverage loss:} with no ground-affecting activity, record/alarm, preserve data, and recover; unrelated work need not pause solely for stale reporting. With active ground-affecting work, continue only under an approved alternate-monitor procedure, recording source/interval; otherwise pause that activity until coverage or an approved alternative returns. Escalate persistent/recurring loss to both GIZMO and SC/DPS experts.
+
+
+
+Investigate recent changes by area/work package. Isolate candidate paths only under the controlling procedure and system owner. Never disconnect protective grounding to clear a report.
+
+
+\section*{9. Shutdown and maintenance}
+
+
+\begin{enumerate}
+
+\item Log reason, UTC time, activity state, alarm, quality/range, threshold, configuration, and last healthy sample. Apply coverage rules before removing monitoring.
+
+\item Verify final history write and replica cursors; make any required consistent archive and record checksum/storage reference.
+
+\item Disable excitation with the approved Kria command and independently confirm stimulus-off; stop acquisition with the approved method. Both commands remain TBD in the source.
+
+\item De-energize chassis/PDU only as authorized. Disconnect cables only after power-off and work release. Leave the permanent safety/inductor path in its approved state.
+
+\end{enumerate}
+
+
+\section*{10. ZedBoard spare limits}
+
+
+
+The spare has its own native OPC UA sidecar, endpoint, and identity with model 1.4.0. It neither proxies nor controls Kria. Installed-loop calibration remains unaccepted: impedance is UncertainLastUsableValue; phase/capacitance are unsupported. Alarm.Active is BadDataUnavailable pending controller/display alarm-bit recovery; its Boolean alone cannot establish clear status.
+
+
+
+Anonymous access is read-only. Gated authenticated threshold writes accept 0--1023 \ensuremath{\Omega}; other writes and operation methods are unsupported. SecurityPolicy None, including password control, restricts use to an isolated maintenance network.
+
+
+
+Do not select the spare for monitoring/DPS until calibration, alarm recovery, identity, non-interference, restart, network-loss, security, display comparison, and end-to-end acceptance are complete.
+
+
+\section*{11. Complete before field release}
+
+
+
+Approve and record: rack/ORC; drawings and safety-assembly topology/IDs; CT orientation/transfer factor/cables; stimulus points; endpoint/trust/roles/network owner; OS/FPGA/runtime/configuration; exact startup/enable/disable/restart/recovery/rollback commands; boot/update/stale/recovery limits; excitation/tolerances; calibration/uncertainty; baseline/threshold/test fixture; SC/DPS fields/alarms; historian/replica/archive retention and restore acceptance; external states/inhibition; pre/post-work and coverage criteria; installed-work procedure; spare acceptance; rack-door revision; Daily Log location; shift and emergency contacts. Unresolved values remain TBD.
+
+
+
+Shift record: date/operator; equipment/ORC/configuration/calibration IDs; threshold/excitation; start/end alarm/reason/quality/range/baseline; age/history/replica/archive status; activity/work package/bond windows; contacts; events/interventions; archive/checksum/plots; open issues and handoff.
+
+
+\section*{Source and precedence}
+
+
+
+\href{https://github.com/marroyav/gizmo-icd/blob/main/guides/ground-reference-monitoring/GIZMO_Ground_Reference_Impedance_Monitoring.tex}{Full guide and source references}: DUNE DocDB 35392-v2, 1805-v12, 25365-v1, 27482-v2, and 285-v11; legacy engineering/readout reports; maintained Kria, ICD, archive, and Ignition repositories. Released drawings, the current Kria manual, installed characterization, and approved work controls take precedence over prototype or legacy values.
+
+
+
+\end{document}
