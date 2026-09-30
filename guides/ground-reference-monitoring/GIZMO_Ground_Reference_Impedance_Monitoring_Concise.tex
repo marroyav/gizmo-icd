@@ -23,14 +23,13 @@ GIZMO is already deployed. SOP004 authorizes its installation and use. The initi
 Item & Recorded setting \\
 \midrule
 Excitation & 1436 Hz \\
-Alarm threshold & 100 \ensuremath{\Omega} \\
 Runtime / OPC UA model & 0.5.1 / 1.4.0 \\
 Monitoring server & dune-fd-test01 \\
 History available & Since July 27, 2026 \\
 \bottomrule
 \end{tabularx}
 
-These are stored settings, not live confirmation. As of September 30, 2026, the instrument is unreachable from the monitoring server. The latest retained sample is September 13, 2026, at 07:11:34 UTC. The server dashboard and historian are running.
+These are stored settings. The server dashboard and historian are running; remote measurements are unavailable.
 
 \section*{Contractor shift checks}
 Contractor personnel work with the cryostat and beam structure connected to Building Ground. At shift start and handover, acknowledge the grounding status:
@@ -48,31 +47,21 @@ Use the planned knife-switch/tagout arrangement for periodic tests of shorts, ca
 \begin{enumerate}
 \item Coordinate the test window with the contractor and confirm the area is clear of tools and electrical cords.
 \item Establish and record the test grounding state using the authorized switching/tagout procedure.
-\item Check fresh data, measurement quality, alarm, frequency, and threshold. Record isolation, valid capacitance, and coupling diagnostics; compare with the permitted limits.
+\item Check fresh data, measurement quality, and frequency. Record isolation, valid capacitance, and coupling diagnostics; compare with the permitted limits.
 \item Restore and verify the required Building Ground connection, complete tagout closeout, and hand the structure back before contractor work resumes.
 \end{enumerate}
-Plan tests before, after, or between shifts, often enough to avoid disruptive late discovery of unwanted connections. Test cadence, detailed shift routine, settling time, permitted isolation limits, and failed/missed-test response: TBD. The recorded 100 \ensuremath{\Omega} alarm threshold is not an approved construction-isolation acceptance limit.
+Plan tests before, after, or between shifts, often enough to avoid disruptive late discovery of unwanted connections. Test cadence, detailed shift routine, settling time, permitted isolation limits, and failed/missed-test response: TBD.
 
-Record test time, grounding state, findings, and handback in Procore Daily Log \textgreater{} GIZMO. HIGH Z is a range indication, not a resistance value. The last stored sample had Uncertain quality, an uncertain clear alarm, and a latched alarm; it does not establish the present ground condition.
+Record test time, grounding state, findings, and handback in Procore Daily Log \textgreater{} GIZMO. HIGH Z is a range indication, not a resistance value. The last stored sample had Uncertain quality; it does not establish the present ground condition.
 
-\section*{FNAL: alarm response}
-\begin{enumerate}
-\item Check the recorded grounding state and any intentional construction or welding bond. An isolation result is not meaningful while the required Building Ground connection is in place.
-\item If the alarm is unexpected for the recorded grounding state, stop new ground-affecting work. Record the time and alarm reason; notify the activity coordinator and grounding/GIZMO contact.
-\item Check what changed: welding returns, temporary leads, cable shields, piping, scaffolding, or tools. Investigate under the work plan.
-\item Keep the data and record the disposition. Do not change the threshold to make the alarm disappear.
-\end{enumerate}
-\section*{FNAL: lost data}
-Treat stale or non-Good data as unavailable monitoring. A running dashboard or an old clear alarm is not proof that GIZMO is working.
+\section*{Measurement availability requirement}
+As of September 30, 2026, remote GIZMO measurements have been unavailable for 17 days, following loss or damage of the mine network switch. The last retained sample is September 13 at 07:11:34 UTC.
 
-\begin{enumerate}
-\item Record the last sample time and notify the GIZMO and SC/DPS contacts.
-\item During an isolation test, do not accept a result without valid data or an approved alternative. During contractor work, verify the required Building Ground connection; continuation and rescheduling follow the work plan.
-\item Check the instrument power and network through the responsible on-site contact. The server reports loss of reachability; the cause has not been established.
-\item After connection returns, verify advancing timestamps, usable measurement/alarm quality, and resumed history before relying on GIZMO again.
-\end{enumerate}
-\section*{Welding}
-Use the approved welding-return arrangement. The FNAL I\&I/GIZMO group manages alarm inhibition and retains alarms and history. Restore the contractor grounding state after work; the FNAL group checks isolation at the scheduled test.
+The facility must provide technical support to keep GIZMO measurements available throughout cryostat installation. Support must cover the instrument, mine network switch, communications, and measurement recovery.
+
+When remote measurements are unavailable, the FNAL I\&I/GIZMO group must provide local measurements in their place and record the results. Contractor work must not be delayed by facility monitoring outages; the facility must maintain the local measurement alternative.
+
+Assign the support contact, local measurement method, test cadence, and recovery time: TBD.
 
 \section*{FNAL: server check}
 On dune-fd-test01, run:
