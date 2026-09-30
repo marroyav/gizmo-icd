@@ -44,36 +44,37 @@ With the rack de-energized, check each cable against its installed label and the
 \end{itemize}
 Changes to grounding, CT routing, stimulus, or calibration require the applicable work controls. Do not improvise a bypass or move connections to clear an alarm.
 
-\section*{Contractor grounding and isolation tests}
-The contractor will work with the cryostat and beam structure connected to Building Ground. GIZMO will check for shorts, capacitance, and coupling between Detector Ground and Building Ground during periodic isolation tests.
-
-The planned arrangement uses a knife switch with tagout to establish the isolation-test state. The switching procedure must identify the switch, test position, protection, and responsible person.
+\section*{Contractor shift checks}
+Contractor personnel work with the cryostat and beam structure connected to Building Ground. At shift start and handover, acknowledge the grounding status:
 
 \begin{enumerate}
-\item Contractor work: verify and record the Building Ground connection while personnel are working on the structure.
-\item Isolation test: coordinate a work pause, use the authorized knife-switch/tagout procedure, and record the actual grounding state and test time.
-\item With fresh, usable GIZMO data, record the isolation indication, capacitance where valid, and coupling diagnostics. Compare with the permitted isolation limits.
-\item Before contractor work resumes, restore and verify the required Building Ground connection, complete tagout closeout, and record the handback.
+\item Check the Building Ground bond with a multimeter.
+\item Check the knife-switch position and tagout status.
+\item Clear tools and electrical cords so the FNAL I\&I/GIZMO group can test before, after, or between shifts.
 \end{enumerate}
-Schedule tests often enough to detect unwanted connections before further construction makes correction disruptive. Test cadence, shift routine, settling time, acceptance limits, and response to a failed or missed test: TBD. The recorded 100 \ensuremath{\Omega} alarm threshold is not an approved construction-isolation acceptance limit.
+GIZMO readings, dashboard checks, and isolation tests are the responsibility of the FNAL I\&I/GIZMO group.
 
-\section*{Start of shift}
+\section*{FNAL I\&I/GIZMO isolation tests}
+Use the planned knife-switch/tagout arrangement for periodic tests of shorts, capacitance, and coupling between Detector Ground and Building Ground.
+
 \begin{enumerate}
-\item Acknowledge the grounding state at shift start: contractor work with Building Ground connected, isolation test under tagout, or unresolved. Confirm the physical connection, knife-switch position, tagout status, and handover with the responsible lead.
-\item Review the last isolation test, unresolved findings, and the next test due under the work plan.
-\item Check the dashboard sample time, connection, quality, alarm, and recorded settings. Old data or a clear alarm alone cannot confirm isolation.
-\item Record the acknowledgement and work state in Procore Daily Log \textgreater{} GIZMO. Detailed shift routine: TBD.
+\item Coordinate the test window with the contractor and confirm the area is clear of tools and electrical cords.
+\item Establish and record the test grounding state using the authorized switching/tagout procedure.
+\item Check fresh data, measurement quality, alarm, frequency, and threshold. Record isolation, valid capacitance, and coupling diagnostics; compare with the permitted limits.
+\item Restore and verify the required Building Ground connection, complete tagout closeout, and hand the structure back before contractor work resumes.
 \end{enumerate}
-HIGH Z is a range indication, not a resistance value. The last stored sample had Uncertain quality, an uncertain clear alarm, and a latched alarm; it does not establish the present ground condition.
+Plan tests before, after, or between shifts, often enough to avoid disruptive late discovery of unwanted connections. Test cadence, detailed shift routine, settling time, permitted isolation limits, and failed/missed-test response: TBD. The recorded 100 \ensuremath{\Omega} alarm threshold is not an approved construction-isolation acceptance limit.
 
-\section*{If an alarm appears}
+Record test time, grounding state, findings, and handback in Procore Daily Log \textgreater{} GIZMO. HIGH Z is a range indication, not a resistance value. The last stored sample had Uncertain quality, an uncertain clear alarm, and a latched alarm; it does not establish the present ground condition.
+
+\section*{FNAL: alarm response}
 \begin{enumerate}
 \item Check the recorded grounding state and any intentional construction or welding bond. An isolation result is not meaningful while the required Building Ground connection is in place.
 \item If the alarm is unexpected for the recorded grounding state, stop new ground-affecting work. Record the time and alarm reason; notify the activity coordinator and grounding/GIZMO contact.
 \item Check what changed: welding returns, temporary leads, cable shields, piping, scaffolding, or tools. Investigate under the work plan.
 \item Keep the data and record the disposition. Do not change the threshold to make the alarm disappear.
 \end{enumerate}
-\section*{If data stops}
+\section*{FNAL: lost data}
 Treat stale or non-Good data as unavailable monitoring. A running dashboard or an old clear alarm is not proof that GIZMO is working.
 
 \begin{enumerate}
@@ -83,9 +84,9 @@ Treat stale or non-Good data as unavailable monitoring. A running dashboard or a
 \item After connection returns, verify advancing timestamps, usable measurement/alarm quality, and resumed history before relying on GIZMO again.
 \end{enumerate}
 \section*{Welding}
-Use the approved welding-return arrangement. Record additional bonds and any approved alarm inhibition; keep raw alarms and history. Restore the contractor grounding state after work and check isolation at the scheduled test.
+Use the approved welding-return arrangement. The FNAL I\&I/GIZMO group manages alarm inhibition and retains alarms and history. Restore the contractor grounding state after work; the FNAL group checks isolation at the scheduled test.
 
-\section*{Server check}
+\section*{FNAL: server check}
 On dune-fd-test01, run:
 
 \begin{quote}\ttfamily\small
@@ -100,7 +101,7 @@ ssh -N -L 127.0.0.1:18081:127.0.0.1:18081 dune-fd-test01
 \end{quote}
 Then open http://127.0.0.1:18081/ in the browser. Use the configured SSH access for the server.
 
-\section*{Shutdown}
+\section*{FNAL: shutdown}
 Coordinate any loss of monitoring before shutdown. Use SOP004 and the deployed operating procedure to disable excitation and power down. Leave the permanent safety-ground path intact. Record the time and reason.
 
 \end{document}
