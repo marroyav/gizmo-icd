@@ -120,14 +120,14 @@ The Far Detector needs two electrical reference systems that serve different pur
 \toprule
 Quantity & Nominal or implemented value & Meaning \\
 \midrule
-Excitation frequency & $1.4\,\mathrm{kHz}$ & Frequency of the injected \emph{sine wave}. The legacy source does not describe this as a pulse train. \\
+Excitation frequency & Deployed configuration & Frequency of the injected \emph{sine wave}; verify against the deployed configuration and calibration. \\
 ADC/DAC rate & Approximately $1\,\mathrm{MS/s}$ & Internal waveform generation and digitization rate in the ZedBoard design. \\
 Kria fast-history cadence & $1\,\mathrm{Hz}$ & Implemented cadence for measurement, alarm, lock-in, thermal, uptime, and sequence snapshots. \\
 Kria platform cadence & $0.1\,\mathrm{Hz}$ & Implemented cadence for chartable operating-system, storage, process, filesystem, and network counters. \\
 \bottomrule
 \end{tabularx}
 
-The legacy program automatically loads its $1.4\,\mathrm{kHz}$ waveform when the \texttt{RUN} command starts. A 2021 design study suggested approximately $3\,\mathrm{kHz}$ for an assumed Far Detector parasitic capacitance, but that was a model, not a commissioned setting. The maintained Kria source defaults to 1436~Hz; the installed value must still be selected from an in-situ frequency sweep and calibration, then frozen in the approved configuration.
+Use the excitation frequency recorded in the deployed \GIZMO{} configuration and its associated calibration. Verify that the operating setting matches the approved configuration; frequency changes require review and re-characterization as described below.
 
 The Kria implementation generates one authoritative, hardware-neutral OPC~UA
 contract. Its namespace URI is \nolinkurl{urn:fnal:gizmo}; the GIZMO--SC/DPS
@@ -683,7 +683,7 @@ Open issues and handoff & \\
   \item DUNE-doc-285-v11, \emph{DUNE Grounding Plan}; file \emph{LBNF/DUNE Far Site Detector Grounding System Requirements}, April 8, 2018.\\
   \url{https://docs.dunescience.org/cgi-bin/private/ShowDocument?docid=285}
 
-  \item D. Subedi, \emph{Ground Impedance Monitor Technical Report}, 2021. ZedBoard architecture and Far Detector frequency study.\\
+  \item D. Subedi, \emph{Ground Impedance Monitor Technical Report}, 2021. ZedBoard architecture.\\
   \url{https://dsubedi.info/data/I1/FNAL_2021_GIZMo_paper.pdf}
 
   \item V. Cerrone, \emph{DUNE ND-LAr 2x2 Demonstrator Tests}, 2022. Legacy SSH, InfluxDB, and Grafana readout implementation.\\
