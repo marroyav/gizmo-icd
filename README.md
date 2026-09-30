@@ -10,9 +10,8 @@ System (SC/DPS).
 
 [Open the concise operations guide](guides/ground-reference-monitoring/GIZMO_Ground_Reference_Impedance_Monitoring_Concise.pdf)
 
-The concise edition consolidates the operating checks, safety boundaries, alarm
-responses, and site-controlled acceptance items. Its LaTeX source and printable
-HTML are included alongside the full guide.
+The quick guide covers shift checks, alarms, outages, planned bonds, and shutdown
+for the deployed system. LaTeX source and printable HTML are included.
 
 ## Interface summary
 
