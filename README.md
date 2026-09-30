@@ -10,7 +10,8 @@ System (SC/DPS).
 
 [Open the concise operations guide](guides/ground-reference-monitoring/GIZMO_Ground_Reference_Impedance_Monitoring_Concise.pdf)
 
-The quick guide covers shift checks, alarms, outages, planned bonds, and shutdown
+The quick guide covers contractor grounding checks, FNAL isolation tests,
+measurement availability, and shutdown
 for the deployed system. LaTeX source and printable HTML are included.
 
 ## Interface summary
@@ -24,9 +25,8 @@ The ICD defines one hardware-neutral SC/DPS interface:
   machine-readable contract, including the ground-impedance alarm delivered to
   SC/DPS.
 
-The Kria unit is the primary implementation. The legacy ZedBoard is the spare
-and presents the same namespace and NodeIds. Unsupported spare capabilities are
-reported with OPC UA status codes; they do not create a second tag design.
+The interface uses the Kria-based GIZMO. Each unit has its own endpoint and
+device identity with the common namespace and NodeIds.
 
 The ICD includes the rack and grounding safety context needed to interpret a
 GIZMO report. It stops at delivery, display, alarm, and history in SC/DPS; it
@@ -36,7 +36,7 @@ protective response.
 ## Contents
 
 - `gizmo_icd_public.tex` and `gizmo_icd_public.pdf`: concise ICD source and PDF;
-- `deliverables/`: detailed DCS intake workbooks;
+- `deliverables/`: Kria DCS intake workbook;
 - `guides/ground-reference-monitoring/`: separate connection, commissioning,
   and monitoring operations guide;
 - `reviews/`: retained contract review records; and
@@ -47,9 +47,7 @@ The authoritative generated contract is maintained with the
 repositories are:
 
 - [`marroyav/gizmo-ignition`](https://github.com/marroyav/gizmo-ignition) for
-  Ignition integration;
-- [`marroyav/gizmo-zedboard-legacy`](https://github.com/marroyav/gizmo-zedboard-legacy)
-  for the spare implementation; and
+  Ignition integration; and
 - [`marroyav/gizmo-data-archive`](https://github.com/marroyav/gizmo-data-archive)
   for archive tooling.
 

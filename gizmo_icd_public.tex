@@ -33,11 +33,11 @@
 
 \title{PUBLIC REVIEW DRAFT:\\ DUNE GIZMO -- SC/DPS\\ Interface Control Document}
 \author{Manuel Arroyave}
-\date{18 August 2026}
+\date{30 September 2026}
 \EDMSDocNo{DUNE GIZMO--SC/DPS Interface Control Document}
 \EDMSDocId{Not a controlled EDMS copy}
-\draftversion{0.13-public}
-\documentlabel{18 August 2026}
+\draftversion{0.14-public}
+\documentlabel{30 September 2026}
 \DocAuthors{Manuel Arroyave}
 \DocCheckedBy{TBD}
 \DocApprovedBy{TBD}
@@ -59,9 +59,7 @@ Impedance Monitor (GIZMO) hand its measurements, alarms, and health information
 to DUNE Slow Controls and the Detector Protection System (SC/DPS)? At that
 boundary, every active GIZMO looks the same: one copper Gigabit Ethernet
 connection and one OPC~UA server using the \code{urn:fnal:gizmo} information
-model. The Kria unit is the primary implementation and the legacy ZedBoard is
-the spare. Hardware differences remain visible through OPC~UA quality and
-access metadata; they do not create a second SC design. GIZMO reports the
+model. The interface is implemented by the Kria-based GIZMO. GIZMO reports the
 ground-impedance alarm to SC/DPS. The response after that report is received is
 defined elsewhere.
 \end{abstract}
@@ -83,13 +81,10 @@ installation and integration; controls cybersecurity.
 \toprule
 \textbf{Revision} & \textbf{Date} & \textbf{Author} & \textbf{Change} \\
 \midrule
-0.10-public & 2026-08-14 & M. Arroyave & Dual-platform public review draft. \\
+0.10-public & 2026-08-14 & M. Arroyave & Initial public review draft. \\
 \addlinespace
-0.11-public & 2026-08-17 & M. Arroyave & Replaced the platform-by-platform
-design narrative with one concise interface; removed numbered GIZMO
-requirements and implementation/test history; identified the ZedBoard as the
-spare; clarified physical Ethernet, OPC~UA, safety-reporting, and scope
-boundaries. \\
+0.11-public & 2026-08-17 & M. Arroyave & Consolidated the interface definition and
+clarified physical Ethernet, OPC~UA, safety-reporting, and scope boundaries. \\
 \addlinespace
 0.12-public & 2026-08-17 & M. Arroyave & Renamed the document as the
 GIZMO--SC/DPS ICD and revised the presentation so that context and operator
@@ -98,6 +93,8 @@ meaning accompany the normative interface requirements. \\
 0.13-public & 2026-08-18 & M. Arroyave & Synchronized the released OPC~UA
 model baseline to 1.4.0 and clarified the boundary between GIZMO tag history
 and the separate SC--Computing database service. \\
+\addlinespace
+0.14-public & 2026-09-30 & M. Arroyave & Updated the hardware scope to the Kria-based GIZMO interface. \\
 \bottomrule
 \end{longtable}
 \endgroup
@@ -157,9 +154,6 @@ Maintained GIZMO runtime and generated
 \code{schema/gizmo-opcua-contract.json} & Normative OPC~UA NodeIds, datatypes,
 units, ranges, access metadata, methods, and meanings. \\
 \addlinespace
-DUNE-doc 1805 and 27482 & Engineering reference for the legacy ZedBoard spare;
-not an alternate SC interface. \\
-\addlinespace
 DUNE-doc 37315 & DUNE Slow Controls architecture and integration direction. \\
 \addlinespace
 Current DUNE SC--Computing ICD & Database-service boundary for Slow Controls:
@@ -174,33 +168,12 @@ controls the machine interface. This ICD explains that contract for people. If
 this summary or an intake spreadsheet disagrees with either controlling source,
 GIZMO and SC/DPS resolve the discrepancy before the interface is used.
 
-\section{One interface, two hardware implementations}
+\section{Kria GIZMO interface}
 
-SC/DPS should not need a different integration simply because the electronics
-inside the rack changed. It connects to a GIZMO endpoint, checks the identity
-reported by that endpoint, and uses the common information model. Each active
-unit runs its own OPC~UA server with its own device identity and endpoint. One
-unit never proxies, configures, starts, or stops the other.
-
-\begin{longtable}{L{0.18\textwidth} L{0.25\textwidth} L{0.47\textwidth}}
-\toprule
-\textbf{Role} & \textbf{Hardware} & \textbf{SC/DPS treatment} \\
-\midrule
-Primary & AMD/Xilinx K26 SOM on a KR260 carrier & Full reference implementation
-of the common interface. \\
-\addlinespace
-Spare & Legacy ZedBoard and preserved controller & Same namespace, NodeIds,
-datatypes, units, and meanings. Unsupported data remain visible with a
-specific non-good StatusCode; unsupported controls return
-\code{BadNotSupported}. A narrower hardware limit may reject a write without
-changing the common engineering metadata. \\
-\bottomrule
-\end{longtable}
-
-The hardware name remains useful for maintenance and may be shown on the
-display. It must not change the meaning of a tag. Dashboards, alarms, history,
-and operator workflow use the common model, so changing to the spare does not
-require a second SC/DPS tag design.
+The GIZMO controller uses an AMD/Xilinx K26 SOM on a KR260 carrier.
+Each unit exposes its own OPC~UA endpoint and device identity using the common
+\code{urn:fnal:gizmo} information model. SC/DPS shall preserve that identity in
+displays, commands, and history. A unit does not proxy or control another unit.
 
 \section{Physical interface}
 
@@ -373,11 +346,11 @@ return an observable result.
 \textbf{Control} & \textbf{Class} & \textbf{Rule} \\
 \midrule
 ThresholdOhm & Bounded read/write & Authorized operator setting;
-verify the live measurement readback after writing. The spare may enforce a
-narrower accepted range and return \code{BadOutOfRange}. \\
+verify the live measurement readback after writing. Writes outside the
+contract range return \code{BadOutOfRange}. \\
 AveragesPerCalculation & Bounded read/write when supported &
-Verify readback and a new measurement sequence. An unsupported spare write
-returns \code{BadNotSupported}. \\
+Verify readback and a new measurement sequence. Unsupported writes return
+\code{BadNotSupported}. \\
 ClearLatch & Operator method when supported & Clears only the
 persistent latch; it shall not suppress an active physical alarm. \\
 Calibration, ADC capture, normalization, and manual time operations &
@@ -486,7 +459,7 @@ interface is released, GIZMO and SC/DPS must jointly complete these checks:
   measurement or the physical alarm.
 \end{enumerate}
 
-The spare passes the same interface tests before it is declared available. A
+Each GIZMO passes the interface tests before it is declared available. A
 successful interface test demonstrates that data and controls cross the
 boundary correctly. It does not establish electrical authorization, metrology,
 calibration validity, or approval of any response downstream of SC/DPS.
@@ -515,8 +488,8 @@ Approve site threshold, stale-data limit, alarm priority, and SC/DPS signal
 mapping. & GIZMO + SC/DPS \\
 Approve the rack-door reference content and revision control. & GIZMO + SC/DPS +
 electrical safety \\
-Complete common-interface and physical-display acceptance of the ZedBoard
-spare. & GIZMO + SC/DPS \\
+Complete interface and physical-display acceptance for each GIZMO. &
+GIZMO + SC/DPS \\
 \bottomrule
 \end{longtable}
 \endgroup
