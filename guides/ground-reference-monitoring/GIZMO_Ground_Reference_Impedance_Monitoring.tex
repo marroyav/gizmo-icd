@@ -91,7 +91,7 @@ Primary audience & Activity coordinators, operators, SC/DPS developers, and auth
 Current hardware basis & Kria-based \GIZMO{} rack described by DUNE-doc-35392-v2; its implementation defines the authoritative \texttt{urn:fnal:gizmo} OPC~UA contract. \\
 Spare basis & Preserved ZedBoard/Zynq \GIZMO{} and DUNE-doc-1805-v12, 25365-v1, and 27482-v2. \\
 Machine contract & The Kria implementation generates the authoritative, hardware-neutral \texttt{urn:fnal:gizmo} OPC~UA model; the companion GIZMO--SC/DPS ICD explains it for human review. Any other \GIZMO{} implementation shall conform to the generated contract. Current released model baseline: 1.4.0. \\
-Controlled procedure & Procore: FDC $>$ Administrative $>$ Work Planning and Controls $>$ SOP004 GIZMO. At this review, Rev.~0 (effective July 15, 2026) covers portable \GIZMO{} setup and periodic checks; it does not authorize installed-Kria commissioning, characterization, planned-ground-short monitoring, or alarm response. \\
+Controlled procedure & Procore: FDC $>$ Administrative $>$ Work Planning and Controls $>$ SOP004 GIZMO. SOP004 authorizes the installation and use of \GIZMO{}. Follow its current approved revision and the applicable work plan. \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -212,7 +212,7 @@ Complete this section at initial installation and whenever the rack, grounding t
 \subsection{Documents and authorization}
 
 \begin{enumerate}
-  \item \checkbox\ Confirm the current approved revision and scope of SOP004 GIZMO and the activity-specific hazard analysis. Do not assume that Rev.~0 authorizes installed-Kria commissioning, characterization, planned-ground-short monitoring, or alarm response.
+  \item \checkbox\ Confirm the current approved revision of SOP004 GIZMO, which authorizes installation and use, and the activity-specific hazard analysis.
   \item \checkbox\ Confirm the released Far Detector grounding single-line, cable schedule, CT orientation, saturable-inductor/MOV assembly drawing, and welding plan.
   \item \checkbox\ Confirm the Kria rack ORC is released for the installed location and configuration. DUNE-doc-35392 documents the G271 development rack, not automatically the underground installation.
   \item \checkbox\ Record the equipment IDs: rack, Kria chassis, PDU, CT, saturable-inductor assembly components, AC/DC converter, calibration, software, FPGA image, and configuration hash.
@@ -360,7 +360,7 @@ Commissioning establishes what ``normal'' means for the actual cryostat, groundi
 
 \subsection{Characterization prerequisites}
 
-The legacy characterization procedure requires equipment powered from the detector isolation transformer to be powered down, the transformer primary locked out/tagged out, and detector-ground connections controlled before a decade box is inserted. Perform characterization only under a current approved procedure that explicitly authorizes the installed configuration and test fixture. At this review, SOP004 Rev.~0 does not provide that authorization. Do not reproduce the legacy test casually during construction or operation.
+The legacy characterization procedure requires equipment powered from the detector isolation transformer to be powered down, the transformer primary locked out/tagged out, and detector-ground connections controlled before a decade box is inserted. Perform characterization only under a current approved procedure that explicitly authorizes the installed configuration and test fixture. Do not reproduce the legacy test casually during construction or operation.
 
 Use only an approved resistive/capacitive test fixture. The test plan should obtain:
 
@@ -634,7 +634,7 @@ Historian schema~2 archive, local retention, checksum, and restore record & \TBD
 Off-board replica/archive destination, retention, and owner & \TBD \\
 External activity-state/planned-bond interface and authorized alarm-inhibit method & \TBD \\
 Approved pre-work, post-work, recovery, and monitoring-coverage criteria & \TBD \\
-SOP004 revision or successor procedure authorizing installed-Kria work & \TBD \\
+Applicable SOP004 revision and activity-specific work-plan reference & \TBD \\
 ZedBoard spare calibration, alarm-bit recovery, security, and acceptance record & \TBD \\
 Rack-door reference revision and Procore Daily Log $>$ GIZMO location & \TBD \\
 Shift electrical lead, \GIZMO{} expert, SC/DPS contact, activity coordinator, escalation contact, and emergency contacts & \TBD \\
