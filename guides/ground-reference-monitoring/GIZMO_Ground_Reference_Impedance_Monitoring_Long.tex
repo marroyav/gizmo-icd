@@ -242,7 +242,7 @@ Post a short reference on the rack door with the rack and ORC identifiers, label
 
 \section{Connection sequence}
 
-Make these connections with the rack de-energized. The power distribution unit (PDU) supplies the rack equipment. Authorized electrical personnel handle fixed grounding conductors and protection devices; follow the site procedure for that work.
+Make these connections with the equipment de-energized. The current installation has no power distribution unit (PDU). Use the installed GIZMO power supply and verify its connections against the site electrical procedure. Authorized electrical personnel handle fixed grounding conductors and protection devices.
 
 \begin{enumerate}
   \item \textbf{Safety-ground assembly.} The authorized electrical worker installs or verifies the approved Detector Ground--CT--saturable-inductor/protection--Cavern/Building Ground path. Do not open this path as part of routine \GIZMO{} work.
@@ -258,11 +258,11 @@ Make these connections with the rack de-energized. The power distribution unit (
 
   \item \textbf{Alarm outputs.} Connect the warning beacon and audible alarm to the labeled \GIZMO{} outputs. Do not use an alarm-power connector as a general auxiliary supply.
 
-  \item \textbf{Network.} Connect the Kria \GIZMO{} Ethernet port to the assigned detector controls network switch port. Connect the Raritan PDU management port separately if required by the rack drawing.
+  \item \textbf{Network.} Connect the Kria \GIZMO{} Ethernet port to the assigned detector controls network switch port.
 
   \item \textbf{DC power.} Connect the approved NRTL-listed AC/DC converter to the Kria chassis. Verify supply voltage and current rating against the installed chassis label before connection.
 
-  \item \textbf{PDU input.} Connect the Raritan PDU only to the approved branch circuit and adapter specified by the installed rack ORC. Check protective-earth continuity before energizing.
+  \item \textbf{AC input.} Connect the GIZMO power supply to the assigned AC supply point using the approved cable. Verify the required protective-earth connections before energizing.
 \end{enumerate}
 
 Work that changes or temporarily bypasses the safety-ground conductor needs a separate electrical procedure. The sequence above does not cover that operation.
@@ -280,8 +280,8 @@ CT output $\rightarrow$ \GIZMO{} CT input & & \\
 Stimulus center $\rightarrow$ approved Detector Ground-side point & & \\
 Stimulus return/chassis $\rightarrow$ approved Cavern/Building Ground & & \\
 Beacon and audible alarm outputs & & \\
-Kria and PDU network ports & & \\
-$12\,\mathrm{VDC}$ supply and PDU branch circuit & & \\
+Kria network connection & & \\
+GIZMO DC supply rating, cable, and AC supply point & & \\
 Safety path and CT routing match released drawing & & \\
 \bottomrule
 \end{tabularx}
@@ -292,7 +292,7 @@ Safety path and CT routing match released drawing & & \\
 Before applying power, confirm that the connection check is signed, the actual grounding arrangement is recorded, and the software, configuration, and calibration match the site record. Have storage and the required remote copies of the data ready. Keep the stimulus disabled until the electrical lead authorizes it.
 
 \begin{enumerate}
-  \item Energize the PDU from its assigned branch circuit and check its normal status. Energize the GIZMO supply, rated for the installed chassis. Stop and de-energize safely if there is abnormal heat, sound, odor, or smoke.
+  \item Energize the installed GIZMO power supply as specified in the site procedure. Check the normal power indications. Stop and de-energize safely if there is abnormal heat, sound, odor, or smoke.
   \item Wait the specified boot time. Check that \texttt{gizmo.target} and its required services are healthy, and record the runtime and model versions.
   \item From the controls host, connect to the assigned OPC~UA endpoint and verify the device identity and certificate. Check that source timestamps advance, the clock is correct, and data age is within the site limit.
   \item Confirm the waveform, frequency, amplitude limit, and calibration. Use the site startup procedure to start acquisition and enable the stimulus when the electrical lead authorizes it.
@@ -434,7 +434,7 @@ Start with what changed before the reading changed. The contractor lead identifi
   \item Agree the outage with the contractor lead and activity coordinator. Arrange local measurements or pause affected activity as described in Section~\ref{sec:coverage-response}.
   \item Record the reason, time, grounding arrangement, last valid sample, alarm, and configuration. Verify that the historian has saved the data and required remote copies are current. Make a consistent backup if the work requires one.
   \item Disable the stimulus with the site-approved control and verify that it is off using the specified independent indication. Then stop acquisition. The exact commands and indication belong in the site record.
-  \item De-energize the chassis and PDU in the order required by the rack procedure. Disconnect signal, network, or DC cables only after power is off and the work has been released.
+  \item De-energize the GIZMO chassis and its power supply as specified in the site procedure. Disconnect signal, network, or DC cables only after power is off and the work has been released.
   \item Leave the permanent safety-ground and inductor path in its required state. Apply the separate electrical procedure to any work on that path.
 \end{enumerate}
 
