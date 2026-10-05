@@ -13,72 +13,40 @@
 \begin{document}
 \raggedright
 \begin{center}\Large\bfseries GIZMO Operations -- Quick Guide\end{center}
-\textbf{Never lift the safety ground.} Follow SOP004 and the current work plan.
+\textbf{Never lift the safety ground.} Working draft: follow SOP004, released grounding drawings, and the current work plan.
 
-\section*{Installed system}
-GIZMO is already deployed. SOP004 authorizes its installation and use. The initial grounding setup will use one saturable inductor.
+\section*{Why grounding and regular tests matter}
+Keep the cryostat and beam structure connected to the required Building Ground during contractor work. Friction and moving materials can generate static charge; grounding drains it and reduces shock and ESD risk. The approved safety-ground path also carries fault current if a powered tool or cable energizes the structure.
 
-\begin{tabularx}{\linewidth}{@{}lX@{}}
-\toprule
-Item & Recorded setting \\
-\midrule
-Excitation & 1436 Hz \\
-Runtime / OPC UA model & 0.5.1 / 1.4.0 \\
-Monitoring server & dune-fd-test01 \\
-History available & Since July 27, 2026 \\
-\bottomrule
-\end{tabularx}
-
-These are stored settings. The server dashboard and historian are running; remote measurements are unavailable.
+Construction can add unwanted ground connections through tools, cables, scaffolding, or metalwork. Regular GIZMO tests find changes in isolation and coupling while they are still accessible to correct, protecting detector noise performance. \textbf{GIZMO does not replace the safety bond check.}
 
 \section*{Contractor shift checks}
-Contractor personnel work with the cryostat and beam structure connected to Building Ground. At shift start and handover, acknowledge the grounding status:
+At shift start and handover:
 
 \begin{enumerate}
-\item Check the Building Ground bond with a multimeter.
-\item Check the knife-switch position and tagout status.
-\item Clear tools and electrical cords so the FNAL I\&I/GIZMO group can test before, after, or between shifts.
+\item Inspect grounding cables and connections. Have the designated trained checker verify the Building Ground bond by the approved method.
+\item Confirm the knife-switch position and tagout status against the work plan; only authorized personnel may change them.
+\item Record the check. Clear tools and cords that could bridge the grounds for the agreed FNAL test window.
 \end{enumerate}
-GIZMO readings, dashboard checks, and isolation tests are the responsibility of the FNAL I\&I/GIZMO group.
 
 \section*{FNAL I\&I/GIZMO isolation tests}
-Use the planned knife-switch/tagout arrangement for periodic tests of shorts, capacitance, and coupling between Detector Ground and Building Ground.
+Test at the agreed recurring shift windows and after work that could alter grounding or coupling.
 
 \begin{enumerate}
-\item Coordinate the test window with the contractor and confirm the area is clear of tools and electrical cords.
-\item Establish and record the test grounding state using the authorized switching/tagout procedure.
-\item Check fresh data, measurement quality, and frequency. Record isolation, valid capacitance, and coupling diagnostics; compare with the permitted limits.
-\item Restore and verify the required Building Ground connection, complete tagout closeout, and hand the structure back before contractor work resumes.
+\item Coordinate with the contractor. Establish and record the authorized test state. Keep the approved safety-ground path intact.
+\item After settling, check fresh, good-quality data, calibration, and frequency. Compare isolation, valid capacitance, coupling, and alarm state with approved limits and the previous equivalent test.
+\item Restore and verify the required Building Ground connection; close out tagout and record handback before work resumes.
 \end{enumerate}
-Plan tests before, after, or between shifts, often enough to avoid disruptive late discovery of unwanted connections. Test cadence, detailed shift routine, settling time, permitted isolation limits, and failed/missed-test response: TBD.
+Log time, checker, grounding state, readings, pass/fail, action, handback, and next test in Procore Daily Log \textgreater{} GIZMO.
 
-Record test time, grounding state, findings, and handback in Procore Daily Log \textgreater{} GIZMO. HIGH Z is a range indication, not a resistance value. The last stored sample had Uncertain quality; it does not establish the present ground condition.
+\section*{When a check fails}
+\begin{itemize}
+\item \textbf{Safety bond damaged, missing, or unverified:} stop affected work, keep clear, and notify the electrical lead. Resume after defects are corrected, the bond is verified, and handback is authorized.
+\item \textbf{Unexpected alarm or failed GIZMO test:} preserve grounding; notify FNAL I\&I/GIZMO and the electrical lead. Investigate and retest under the work plan. Stop affected work if safety is uncertain.
+\item \textbf{Missing, stale, or uncertain data; missed test:} log the gap. FNAL I\&I/GIZMO must provide a valid local measurement. If the required check cannot be completed, refer work authorization to the responsible lead.
+\end{itemize}
+HIGH Z is not an automatic pass. A dark beacon does not prove safe grounding. Never remove a safety bond or change thresholds to clear an alarm.
 
-\section*{Measurement availability requirement}
-As of September 30, 2026, remote GIZMO measurements have been unavailable for 17 days, following loss or damage of the mine network switch. The last retained sample is September 13 at 07:11:34 UTC.
-
-The facility must provide technical support to keep GIZMO measurements available throughout cryostat installation. Support must cover the instrument, mine network switch, communications, and measurement recovery.
-
-When remote measurements are unavailable, the FNAL I\&I/GIZMO group must provide local measurements in their place and record the results. Contractor work must not be delayed by facility monitoring outages; the facility must maintain the local measurement alternative.
-
-Assign the support contact, local measurement method, test cadence, and recovery time: TBD.
-
-\section*{FNAL: server check}
-On dune-fd-test01, run:
-
-\begin{quote}\ttfamily\small
-/storage/gizmo-monitor/bin/status
-\end{quote}
-It reports the historian, dashboard, upstream connection, stored samples, and disk space. Check upstream connectivity and the newest GIZMO sample, not just whether the processes are running.
-
-For a local dashboard connection:
-
-\begin{quote}\ttfamily\small
-ssh -N -L 127.0.0.1:18081:127.0.0.1:18081 dune-fd-test01
-\end{quote}
-Then open http://127.0.0.1:18081/ in the browser. Use the configured SSH access for the server.
-
-\section*{FNAL: shutdown}
-Coordinate any loss of monitoring before shutdown. Use SOP004 and the deployed operating procedure to disable excitation and power down. Leave the permanent safety-ground path intact. Record the time and reason.
+\textbf{Before use:} the work plan must name the responsible people and define test methods, intervals, settling time, limits, local fallback, and handback authority. See the extended guide for settings, server checks, and shutdown.
 
 \end{document}

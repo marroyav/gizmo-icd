@@ -10,9 +10,10 @@ System (SC/DPS).
 
 [Open the concise operations guide](guides/ground-reference-monitoring/GIZMO_Ground_Reference_Impedance_Monitoring_Concise.pdf)
 
-The quick guide covers contractor grounding checks, FNAL isolation tests,
-measurement availability, and shutdown
-for the deployed system. LaTeX source and printable HTML are included.
+The guides explain grounding safety, recurring FNAL isolation tests, and
+actions for failed checks or missing measurements. The quick guide covers
+shift actions; the extended guide adds connections, server checks, and
+shutdown. LaTeX source and printable HTML are included.
 
 ## Interface summary
 

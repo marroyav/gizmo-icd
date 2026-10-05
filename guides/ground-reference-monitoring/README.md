@@ -10,6 +10,15 @@ This directory contains the publication-safe source and generated PDF for:
 
 [Open the public-review guide](GIZMO_Ground_Reference_Impedance_Monitoring.pdf).
 
+[Open the quick guide](GIZMO_Ground_Reference_Impedance_Monitoring_Concise.pdf)
+or its [printable HTML version](GIZMO_Ground_Reference_Impedance_Monitoring_Concise.html).
+
+Both guides explain why the structure must stay grounded, why GIZMO tests
+must recur during construction, and who acts on failed checks or missing data.
+They distinguish verification of the safety bond from GIZMO isolation and
+coupling measurements. Site test methods, limits, intervals, fallback, and
+handback authority must be assigned in the work plan before field use.
+
 This is an integration and commissioning draft, not an approved electrical
 work procedure. Released grounding drawings, ORC, LOTO, hazard analysis,
 approved work controls, calibration, site configuration, and responsible
