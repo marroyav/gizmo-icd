@@ -6,14 +6,19 @@ System (SC/DPS).
 
 [Open the concise public-review ICD](gizmo_icd_public.pdf)
 
-[Open the separate ground-reference monitoring operations guide](guides/ground-reference-monitoring/GIZMO_Ground_Reference_Impedance_Monitoring.pdf)
+[Open the full ground-reference monitoring operations guide](guides/ground-reference-monitoring/GIZMO_Ground_Reference_Impedance_Monitoring_Long.pdf)
+([LaTeX source](guides/ground-reference-monitoring/GIZMO_Ground_Reference_Impedance_Monitoring_Long.tex))
 
-[Open the concise operations guide](guides/ground-reference-monitoring/GIZMO_Ground_Reference_Impedance_Monitoring_Concise.pdf)
+[Open the two-page operations reference](guides/ground-reference-monitoring/GIZMO_Ground_Reference_Impedance_Monitoring.pdf)
+
+[Open the one-page quick guide](guides/ground-reference-monitoring/GIZMO_Ground_Reference_Impedance_Monitoring_Concise.pdf)
 
 The guides explain grounding safety, recurring FNAL isolation tests, and
-actions for failed checks or missing measurements. The quick guide covers
-shift actions; the extended guide adds connections, server checks, and
-shutdown. LaTeX source and printable HTML are included.
+actions for failed checks or missing measurements. The full guide restores
+the detailed connection, commissioning, monitoring, welding, and fault-response
+procedures and adds contractor coordination, test windows, and verified
+handback. The shorter guides remain available for shift use. LaTeX sources
+and printable quick-guide HTML are included.
 
 ## Interface summary
 

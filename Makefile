@@ -2,7 +2,8 @@ TEX := gizmo_icd_public
 LATEXMK ?= latexmk
 GUIDE_DIR := guides/ground-reference-monitoring
 GUIDE_PDFS := $(GUIDE_DIR)/GIZMO_Ground_Reference_Impedance_Monitoring.pdf \
-	$(GUIDE_DIR)/GIZMO_Ground_Reference_Impedance_Monitoring_Concise.pdf
+	$(GUIDE_DIR)/GIZMO_Ground_Reference_Impedance_Monitoring_Concise.pdf \
+	$(GUIDE_DIR)/GIZMO_Ground_Reference_Impedance_Monitoring_Long.pdf
 
 .PHONY: all clean
 
