@@ -84,7 +84,7 @@
 
 This guide explains how the deployed Kria GIZMO is connected, checked, and used during construction. It is for the contractor work lead, FNAL I\&I/GIZMO, the electrical lead, and the Slow Controls/Detector Protection System (SC/DPS) team.
 
-Use it with the current SOP004, grounding drawings, rack Operational Readiness Clearance (ORC), and work plan. Those documents set the electrical work controls, including lockout/tagout (LOTO). This is a public review draft; the site settings and responsibilities in Section~\ref{sec:site-record} still need to be completed.
+Use it with the current SOP004, grounding drawings, rack Operational Readiness Clearance (ORC), and work plan. Those documents set the electrical work controls, including lockout/tagout (LOTO). This is a public review draft. Section~\ref{sec:site-record} records the deployed instrument settings and identifies the work-plan details to complete before field use.
 
 \danger{Keep the required safety-ground path intact. Only authorized electrical personnel may change grounding connections. Never lift a safety ground to clear a GIZMO alarm.}
 
@@ -325,7 +325,7 @@ A reference or ``open'' measurement is a test-fixture condition; it does not ins
 
 Choose a frequency that avoids installation resonances and strong equipment-noise lines, separates the reference response from known shorts, and gives stable measurements within the permitted stimulus and touch-voltage limits. Record the scan, chosen frequency, waveform, amplitude, uncertainty, calibration identifier, and approver.
 
-The recorded operating frequency is 1436 Hz. Confirm it against the installed configuration and calibration. A different frequency, stimulus amplitude, CT, cable route, inductor, or major bonding change needs review and may require a new baseline.
+Confirm the operating frequency against the configuration and calibration recorded in Section~\ref{sec:site-record}. A different frequency, stimulus amplitude, CT, cable route, inductor, or major bonding change needs review and may require a new baseline.
 
 Set the alarm threshold from these measurements. Document the separation from normal variation and the margin for the highest-resistance unwanted connection that must be detected. A threshold change is an engineering decision; it is not a way to clear an unexplained alarm.
 
@@ -441,28 +441,43 @@ Start with what changed before the reading changed. The contractor lead identifi
 \section{Site settings and responsibilities}
 \label{sec:site-record}
 
-Complete this record before using the guide as a field procedure. The electrical lead and FNAL set the test methods and limits; the contractor lead and activity coordinator agree the work and test windows. The public guide does not assign these installation-specific values.
+\subsection{Recorded instrument configuration}
 
-\begin{longtable}{@{}L{0.63\linewidth}L{0.28\linewidth}@{}}
+These entries come from the Kria deployment record of August 17, 2026, the July 24 calibration report, and retained historian data through September 13. The calibration report was revised on July 29. Check the installed settings against this record before a test.
+
+\begin{longtable}{@{}L{0.27\linewidth}L{0.66\linewidth}@{}}
 \toprule
-Item to record & Value or reference \\
+Item & Recorded value or reference \\
 \midrule
 \endhead
-SOP004 revision, work plan, hazard analysis, rack ID, and ORC & \TBD \\
-Grounding drawing, cable schedule, required construction bond, knife-switch function, and allowed test arrangement & \TBD \\
-Inductor quantity, ID, protection, and position; CT ID, orientation, cable, and transfer factor & One inductor planned; details \TBD \\
-Stimulus injection point, return, waveform, amplitude, frequency, and tolerances & \TBD \\
-Software, operating system, FPGA image, configuration, and calibration identifiers; calibration range and uncertainty & \TBD \\
-Startup/shutdown commands, stimulus-off indication, boot time, and recovery procedure & \TBD \\
-Bond checker, instrument, method, test points, and acceptance limit & \TBD \\
-GIZMO test interval, recurring windows, settling time, isolation/capacitance/coupling limits, baseline, and alarm threshold & \TBD \\
-Pre-work and post-work checks, recovery interval, and treatment of failed or missed tests & \TBD \\
-Data-age limit, approved local alternative, facility support contact, and recovery target & \TBD \\
-Contractor and electrical leads, FNAL, SC/DPS, facility support, coordinator, release authority, and emergency contacts & \TBD \\
-OPC~UA endpoint, device identity, certificates, access roles, and network owner & \TBD \\
-Work-state source, planned-bond record, and alarm-inhibit procedure & \TBD \\
-Historian/archive locations, retention, backup, restore test, and responsible person & \TBD \\
-Rack-door reference revision and Procore log location & \TBD \\
+Software & \texttt{gizmo-runtime} 0.5.1, ARM64; OPC~UA model 1.4.0. Deployed August 17 and present in the September 13 historian record. \\
+Operating system & Ubuntu 22.04.4 LTS; kernel \nolinkurl{5.15.0-1027-xilinx-zynqmp}. \\
+FPGA & Application \nolinkurl{GIZMo_Kria_3_7_25}; loaded overlay \nolinkurl{GIZMo_Kria_3_7_25_image_1}, recorded as operating on August 17. \\
+Configuration and state & Configuration: \nolinkurl{/etc/gizmo/}. Calibration and device state: \nolinkurl{/var/lib/gizmo/}. The August 17 deployment backup retains the configuration checksums and rollback record. \\
+Startup and checks & \texttt{gizmo.target} enabled at boot. Service status: \texttt{systemctl status gizmo.target}. Diagnostic check: \texttt{sudo gizmo-doctor}. \\
+Excitation frequency & 1436 Hz in the retained measurement record. \\
+Alarm threshold & 100 $\Omega$ in the calibration and retained measurement records. This is the configured alarm setting; the electrical lead and FNAL define the acceptance limits for each site test. \\
+Calibration run & July 24, 2026, \texttt{CAL 1000}; external resistance box set to 9 M$\Omega$ and external capacitance set to zero. Four calibration tables: \nolinkurl{Rcalibration.csv}, \nolinkurl{Rcalibration_ph.csv}, \nolinkurl{Ccalibration.csv}, and \nolinkurl{Ccalibration_ph.csv}. Their checksums are in the July 27 deployment record. \\
+Calibration coverage & Resistance: 65 records, with finite points through 499.56 $\Omega$ and a 1 M$\Omega$ open reference. Capacitance: 128 records spanning 0--9.1078 $\mu$F. The runtime displays HIGH Z above its 500 $\Omega$ numeric presentation boundary. \\
+Validation & Nominal 200 $\Omega$ shunt: 12 readings, mean 192.53 $\Omega$, range 192.3--192.7 $\Omega$. A brief short asserted the latch at 11:58:21 MDT on July 24. The report leaves resolution and repeatability characterization open; these results do not establish measurement uncertainty across the range. \\
+Historian & SQLite schema 2; local file \nolinkurl{/var/lib/gizmo/history/gizmo-history.sqlite3}. A facility replica retains the copied records without age-based pruning. Capture intervals and local retention are listed in Appendix~\ref{sec:controls-reference}. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Work-plan details to complete}
+
+Enter the following in the site work package and link it from the shift record. The named leads agree the limits, responsibilities, and test windows before work starts.
+
+\begin{longtable}{@{}L{0.27\linewidth}L{0.66\linewidth}@{}}
+\toprule
+Responsible lead & Details to record \\
+\midrule
+\endhead
+Electrical lead & SOP004 revision, hazard analysis, rack ID/ORC, grounding drawing and cable schedule; required construction bond, knife-switch function, and permitted test arrangement; inductor and CT identification, protection, routing, and CT transfer factor. \\
+Electrical lead and FNAL & Bond-check instrument, method, test points, acceptance limit, and trained checker; stimulus injection/return points, waveform, amplitude and tolerances; stimulus controls, independent off indication, boot time, shutdown, and recovery sequence. \\
+FNAL and electrical lead & Accepted installed baseline and calibration uncertainty; isolation, capacitance, and coupling limits; settling and recovery intervals; response to failed tests. \\
+Contractor lead and coordinator & Work package, named leads and release authority, emergency contacts, recurring test windows, pre/post-work checks, and treatment of missed tests; work-state and planned-bond records, handback, rack-door revision, and Procore log location. \\
+SC/DPS and facility support & Data-age limit, approved local alternative, support contact and recovery target; endpoint, device identity, certificates, access roles and network owner; alarm-inhibit procedure; archive locations, backup owner, schedule, and restore check. \\
 \bottomrule
 \end{longtable}
 
@@ -489,7 +504,7 @@ End of shift & Current arrangement, unresolved issues and owners, next crew's ac
 \section{Instrument and controls reference}
 \label{sec:controls-reference}
 
-The recorded Kria software baseline is runtime 0.5.1 with OPC~UA model 1.4.0. Confirm the running versions before use. The generated schema in the runtime repository defines the data interface; the companion ICD explains it. Site addresses, certificates, permissions, and field commands are maintained in the site configuration.
+The generated schema for the model recorded in Section~\ref{sec:site-record} defines the data interface; the companion ICD explains it. Site addresses, certificates, permissions, and field commands are maintained in the site configuration.
 
 \subsection{Reading the data}
 
@@ -510,7 +525,7 @@ The current interface does not supply the work arrangement, bond permit/window, 
 
 \subsection{Rates and storage}
 
-The excitation frequency is the frequency of the injected sine wave, not the rate at which readings are logged. The recorded setting is 1436 Hz. ADC/DAC waveform rates come from the deployed hardware configuration.
+The excitation frequency is the frequency of the injected sine wave, not the rate at which readings are logged. ADC/DAC waveform rates come from the deployed hardware configuration.
 
 The Kria historian uses SQLite schema version 2 with these recorded defaults:
 
@@ -561,6 +576,8 @@ Do not select the spare as a monitoring or DPS source until those checks are acc
   \item Current approved SOP004 GIZMO and activity-specific work plan.
   \item Released installation grounding drawing, cable schedule, and rack ORC.
   \item Deployed GIZMO configuration, software manual, and accepted calibration record.
+
+  \item Kria records used for Section~\ref{sec:site-record}: \emph{GIZMo model 1.4 deployment result}, August 17, 2026; \emph{GIZMo Kria Calibration Curves and Runtime Interpretation}, July 24, revised July 29, 2026; July 27 post-deployment board summary; and the retained historian record through September 13, 2026.
 
   \item Public GIZMO Kria runtime, generated OPC~UA contract, reference
   implementation, historian, dashboard, and ZedBoard-spare status. The

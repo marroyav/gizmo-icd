@@ -23,6 +23,8 @@ and recording procedures, with terms defined first and instrument/controls
 details in appendices. Contractor coordination now covers shift bond
 checks, agreed FNAL test windows, authorized switching, local fallback,
 electrical verification, and acknowledged handback before work resumes.
+The instrument record includes the deployed software, FPGA, frequency,
+threshold, calibration results, and historian settings, with dated sources.
 The original unmodified revision remains in Git history.
 
 All three guides explain why the structure must stay grounded, why GIZMO tests
