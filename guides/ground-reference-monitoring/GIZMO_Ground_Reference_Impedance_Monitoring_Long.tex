@@ -122,7 +122,7 @@ Repeat the GIZMO tests at agreed intervals and after work that could change the 
 
 GIZMO injects a small AC signal between the two grounds. A Pearson current transformer (CT) measures the portion returning through the intended safety-ground conductor. Another conductive path can divert current around that route and change the reported impedance.
 
-The reading does not locate the connection. Its meaning depends on the actual grounding arrangement. The figure shows the measurement principle; use the released drawing for installation and switching.
+The reading does not locate the connection. Its meaning depends on the actual grounding arrangement. The figure shows the measurement principle; use the released drawing for installation and connection changes.
 
 \begin{figure}[htbp]
 \centering
@@ -159,7 +159,7 @@ The reading does not locate the connection. Its meaning depends on the actual gr
 \label{fig:concept}
 \end{figure}
 
-The planned initial installation uses one saturable inductor. Verify its protection, CT routing, and connection between Detector Ground and Cavern/Building Ground against the released installation drawing. The required construction bond and any knife-switch arrangement are defined by that drawing; the conceptual figure does not authorize switching them.
+The planned initial installation uses one saturable inductor. Verify its protection, CT routing, and connection between Detector Ground and Cavern/Building Ground against the released installation drawing. The required construction bond and permitted grounding connections are defined by that drawing; the conceptual figure does not authorize changing those connections.
 
 \section{Who does what}
 
@@ -168,7 +168,7 @@ The planned initial installation uses one saturable inductor. Verify its protect
 Role & Responsibility \\
 \midrule
 Contractor work lead & Describes the planned work and recent changes, arranges shift bond checks, clears the agreed test area, and acknowledges handback. \\
-Electrical lead & Controls grounding work and switching. Assigns authorized electrical personnel to verify the safety path, establish the test arrangement, and verify restoration. \\
+Electrical lead & Controls grounding work and connection changes. Assigns authorized electrical personnel to verify the safety path, establish the test arrangement, and verify restoration. \\
 FNAL I\&I/GIZMO & Takes and interprets GIZMO measurements, checks the instrument and dashboard, runs isolation tests, provides local fallback measurements, and records results. \\
 Activity coordinator & Agrees work and test windows with the contractor and FNAL, tracks the work package, and coordinates release of the area. \\
 SC/DPS team & Maintains the controls connection, display, timestamps, history, and alarms for missing or invalid data. \\
@@ -192,19 +192,19 @@ The work plan must state the test interval, settling time, limits, named contact
 Arrangement & What the reading can tell you \\
 \midrule
 Contractor work & The required Building Ground bond is connected and verified. A low reading or active alarm may be expected, and that bond can hide a second unwanted connection. \\
-FNAL isolation test & Authorized personnel set the approved switch/tagout arrangement while keeping the permanent safety path intact. FNAL compares the result with the baseline for this arrangement. \\
+FNAL isolation test & Authorized personnel set the approved grounding arrangement and tagout status while keeping the permanent safety path intact. FNAL compares the result with the baseline for this arrangement. \\
 Welding or another planned bond & The added connection may change the reading. Record which bonds are present and use the welding procedure in Section~\ref{sec:welding}. \\
 \bottomrule
 \end{tabularx}
 
-The knife switch must be identified by its function in the released drawing. This guide does not assume which contact may be opened. If the safe test arrangement is unclear, resolve it with the electrical lead before switching.
+The grounding connections must be identified by their function in the released drawing. This guide does not assume which connection may be opened. If the safe test arrangement is unclear, resolve it with the electrical lead before changing connections.
 
 \subsection{At shift start and handover}
 
 \begin{enumerate}
   \item The contractor lead arranges an inspection of the accessible grounding cables, clamps, and connections. Report damage, looseness, corrosion, or paint obstructing contact.
   \item The designated checker verifies the required Building Ground bond using the specified instrument, test points, method, and acceptance limit. Never use resistance mode on an energized circuit. A continuity beep alone is not a pass.
-  \item Confirm the knife-switch position and tagout status against the work plan. Report any mismatch to the electrical lead.
+  \item Confirm the grounding connections and tagout status against the work plan. Report any mismatch to the electrical lead.
   \item Tell FNAL what changed since the previous test: new metalwork, cables, temporary bonds, welding returns, or moved equipment. Confirm the next test window.
   \item Record the checker, time, bond result, grounding arrangement, and open issues in Procore Daily Log $>$ GIZMO.
 \end{enumerate}
@@ -213,7 +213,7 @@ The knife switch must be identified by its function in the released drawing. Thi
 
 \begin{enumerate}
   \item The contractor lead confirms that the agreed area is available and affected work is paused. Clear tools and cords that could bridge the grounds during the test.
-  \item Authorized electrical personnel establish and record the switch/tagout arrangement. The permanent safety path, including the approved inductor assembly, stays effective throughout the test.
+  \item Authorized electrical personnel establish and record the grounding arrangement and tagout status. The permanent safety path, including the approved inductor assembly, stays effective throughout the test.
   \item FNAL waits the specified settling time, then checks data age, quality, calibration, frequency, and alarm status. Record resistance or HIGH Z, valid capacitance, and coupling diagnostics. Compare with the limits and the previous test under the same conditions.
   \item If the result is unexpected, FNAL and the electrical lead investigate with the contractor lead. Start with the work done since the last good test. Record the finding and retest after correction.
 \end{enumerate}
@@ -349,7 +349,7 @@ Show the actual work and bond arrangement alongside the measurements, with the p
 
 \subsection{What to record}
 
-Use Procore for the human record: shift checks, changes in work or bonding, test times and results, problems, corrective action, and handback. Link the before/after plots and data archive. Keep raw measurements in the historian; the storage and backup details are in Appendix~\ref{sec:controls-reference}.
+Use Procore for the human record: shift checks, changes in work or bonding, test times and results, problems, corrective action, and handback. Attach measurement plot captures to the Procore entry and link the before/after plots and data archive. Keep raw measurements in the historian; the storage and backup details are in Appendix~\ref{sec:controls-reference}.
 
 \section{Welding and other planned bonds}
 \label{sec:welding}
@@ -473,7 +473,7 @@ Enter the following in the site work package and link it from the shift record. 
 Responsible lead & Details to record \\
 \midrule
 \endhead
-Electrical lead & SOP004 revision, hazard analysis, rack ID/ORC, grounding drawing and cable schedule; required construction bond, knife-switch function, and permitted test arrangement; inductor and CT identification, protection, routing, and CT transfer factor. \\
+Electrical lead & SOP004 revision, hazard analysis, rack ID/ORC, grounding drawing and cable schedule; required construction bond, grounding connection functions, and permitted test arrangement; inductor and CT identification, protection, routing, and CT transfer factor. \\
 Electrical lead and FNAL & Bond-check instrument, method, test points, acceptance limit, and trained checker; stimulus injection/return points, waveform, amplitude and tolerances; stimulus controls, independent off indication, boot time, shutdown, and recovery sequence. \\
 FNAL and electrical lead & Accepted installed baseline and calibration uncertainty; isolation, capacitance, and coupling limits; settling and recovery intervals; response to failed tests. \\
 Contractor lead and coordinator & Work package, named leads and release authority, emergency contacts, recurring test windows, pre/post-work checks, and treatment of missed tests; work-state and planned-bond records, handback, rack-door revision, and Procore log location. \\
@@ -491,7 +491,7 @@ Entry & What to include \\
 \midrule
 \endhead
 Shift and people & Date, shift, contractor lead/crew, work area/package, FNAL operator, electrical lead, and release authority. \\
-Starting condition & Actual bonds and switch/tagout state; bond-check time, checker, method, and result. Link the rack, configuration, calibration, and applicable site record. \\
+Starting condition & Actual bonds and tagout status; bond-check time, checker, method, and result. Link the rack, configuration, calibration, and applicable site record. \\
 Instrument check & Source time, quality, range/reading, alarm/reason, frequency, threshold, and historian/network status. \\
 Test & Planned and actual window, arrangement, settling time, readings, applicable limits, result, recent work, and corrective action. Attach the before/after trend and repeat-test result. \\
 Outage or exception & Last valid sample, missed check, local fallback and results, affected activity, responsible lead's decision, recovery owner, and next action. \\
